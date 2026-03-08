@@ -5,6 +5,8 @@ import {hc} from 'hono/client';
 import {HTTPException} from 'hono/http-exception';
 import {Env} from './env.js';
 import {getDummyAPI} from './api/dummy.js';
+import {getRpcAPI} from './api/rpc.js';
+import {getHealthAPI} from './api/health.js';
 
 export type {Env};
 
@@ -30,10 +32,14 @@ export function createServer<CustomEnv extends Env>(
 	const app = new Hono<{Bindings: CustomEnv}>();
 
 	const dummy = getDummyAPI(options);
+	const rpc = getRpcAPI(options);
+	const health = getHealthAPI(options);
 
 	return app
 		.use('/*', corsSetup)
 		.route('/', dummy)
+		.route('/rpc', rpc)
+		.route('/health', health)
 		.onError((err, c) => {
 			const config = c.get('config');
 			const env = config?.env || {};

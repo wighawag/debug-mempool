@@ -28,20 +28,26 @@ async function main() {
   program
     .name("template-agnostic-server-nodejs")
     .version(pkg.version)
-    .usage(`template-agnostic-server-nodejs [--port 2000] [--sql <sql-folder>]`)
+    .usage(`template-agnostic-server-nodejs [--port 2000] [--rpc-url <url>]`)
     .description("run template-agnostic-server-nodejs as a node process")
-    .option("-p, --port <port>");
+    .option("-p, --port <port>", "port to listen on", "2000")
+    .option("-r, --rpc-url <url>", "RPC URL for the Ethereum node to proxy to");
 
   program.parse(process.argv);
 
   type Options = {
     port?: string;
+    rpcUrl?: string;
   };
 
   const options: Options = program.opts();
   const port = options.port ? parseInt(options.port) : 2000;
 
-  const env = process.env as NodeJSEnv;
+  // CLI arguments override environment variables
+  const env: NodeJSEnv = {
+    ...(process.env as NodeJSEnv),
+    RPC_URL: options.rpcUrl || process.env.RPC_URL || "http://localhost:8545",
+  };
 
   const db = env.DB;
 
@@ -66,5 +72,10 @@ async function main() {
   });
 
   console.log(`Server is running on http://localhost:${port}`);
+  console.log(`RPC proxy configured to: ${env.RPC_URL || "(not configured)"}`);
+  console.log(`Endpoints:`);
+  console.log(`  - POST /rpc - JSON-RPC proxy endpoint`);
+  console.log(`  - GET /health - Health check`);
+  console.log(`  - GET /health/upstream - Upstream node health check`);
 }
 main();
