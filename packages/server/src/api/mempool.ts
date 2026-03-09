@@ -141,7 +141,8 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 			const limit = parseInt(c.req.query('limit') ?? '50', 10);
 			const offset = parseInt(c.req.query('offset') ?? '0', 10);
 
-			const txs = await config.storage.getPendingTransactions({
+			// Use getTransactionHistory to get all statuses by default
+			const txs = await config.storage.getTransactionHistory({
 				status: status as TransactionStatus | undefined,
 				limit,
 				offset,

@@ -73,15 +73,28 @@ export class MempoolStorage {
 		return result.results.length > 0 ? this.rowToTransaction(result.results[0]) : null;
 	}
 
-	// Get all pending transactions
+	// Get all pending transactions (defaults to pending status)
 	async getPendingTransactions(filter?: TransactionFilter): Promise<PendingTransaction[]> {
+		return this.queryTransactions(filter, true);
+	}
+
+	// Get transaction history (all statuses by default)
+	async getTransactionHistory(filter?: TransactionFilter): Promise<PendingTransaction[]> {
+		return this.queryTransactions(filter, false);
+	}
+
+	// Internal query method with optional status defaulting
+	private async queryTransactions(
+		filter?: TransactionFilter,
+		defaultToPending: boolean = true
+	): Promise<PendingTransaction[]> {
 		let query = 'SELECT * FROM PendingTransactions WHERE 1=1';
 		const params: unknown[] = [];
 
 		if (filter?.status) {
 			query += ' AND status = ?';
 			params.push(filter.status);
-		} else {
+		} else if (defaultToPending) {
 			query += " AND status = 'pending'";
 		}
 

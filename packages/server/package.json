@@ -25,6 +25,7 @@
     "viem": "^2.47.0"
   },
   "devDependencies": {
+    "@libsql/client": "^0.15.0",
     "@types/node": "^25.2.0",
     "as-soon": "^0.0.11",
     "eip-1193": "^0.6.5",
@@ -32,6 +33,7 @@
     "prettier": "^3.4.2",
     "prool": "^0.2.2",
     "remote-procedure-call": "^0.1.1",
+    "remote-sql-libsql": "^0.0.6",
     "tsx": "^4.21.0",
     "typescript": "^5.6.3",
     "vitest": "^4.0.18"

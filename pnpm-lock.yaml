@@ -36,6 +36,9 @@ importers:
         specifier: ^2.47.0
         version: 2.47.0(typescript@5.7.3)(zod@3.24.1)
     devDependencies:
+      '@libsql/client':
+        specifier: ^0.15.0
+        version: 0.15.15
       '@types/node':
         specifier: ^25.2.0
         version: 25.3.5
@@ -57,6 +60,9 @@ importers:
       remote-procedure-call:
         specifier: ^0.1.1
         version: 0.1.1(@types/node@25.3.5)
+      remote-sql-libsql:
+        specifier: ^0.0.6
+        version: 0.0.6(@libsql/core@0.15.15)
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
