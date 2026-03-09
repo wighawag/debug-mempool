@@ -10,7 +10,6 @@ export interface FilterResult {
 
 export interface FilterContext {
 	storage: MempoolStorage;
-	isPaused: boolean;
 	minGasPrice: bigint;
 }
 
@@ -19,15 +18,6 @@ export async function applyFilters(
 	tx: DecodedTransaction,
 	context: FilterContext
 ): Promise<FilterResult> {
-	// Check if mempool is paused
-	if (context.isPaused) {
-		return {
-			accepted: true, // Accept into local mempool but don't forward
-			action: 'hold',
-			reason: 'Mempool is paused',
-		};
-	}
-
 	// Check minimum gas price
 	const effectiveGasPrice = getEffectiveGasPrice(tx);
 	if (effectiveGasPrice < context.minGasPrice) {

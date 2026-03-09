@@ -139,7 +139,6 @@ export interface FilterResult {
 
 export interface FilterContext {
   storage: MempoolStorage;
-  isPaused: boolean;
   minGasPrice: bigint;
 }
 
@@ -148,15 +147,6 @@ export async function applyFilters(
   tx: DecodedTransaction,
   context: FilterContext
 ): Promise<FilterResult> {
-  // Check if mempool is paused
-  if (context.isPaused) {
-    return {
-      accepted: true,  // Accept into local mempool but don't forward
-      action: 'hold',
-      reason: 'Mempool is paused',
-    };
-  }
-
   // Check minimum gas price
   const effectiveGasPrice = tx.maxFeePerGas ?? tx.gasPrice;
   if (effectiveGasPrice < context.minGasPrice) {
@@ -242,7 +232,6 @@ import { forwardRpcRequest, createJsonRpcResult, createJsonRpcError } from '../r
 import { JsonRpcResponse } from '../rpc/types.js';
 
 export interface MempoolState {
-  isPaused: boolean;
   minGasPrice: bigint;
   autoForward: boolean;
 }
@@ -256,7 +245,6 @@ export class MempoolManager {
   // Get current mempool state
   async getState(): Promise<MempoolState> {
     return {
-      isPaused: await this.storage.isPaused(),
       minGasPrice: await this.storage.getMinGasPrice(),
       autoForward: await this.storage.isAutoForward(),
     };
@@ -291,7 +279,6 @@ export class MempoolManager {
     // Apply filters
     const filterResult = await applyFilters(decoded, {
       storage: this.storage,
-      isPaused: state.isPaused,
       minGasPrice: state.minGasPrice,
     });
 
@@ -316,8 +303,8 @@ export class MempoolManager {
       txType: decoded.txType,
     });
 
-    // If not paused and auto-forward enabled, forward to node
-    if (!state.isPaused && state.autoForward && filterResult.action === 'accept') {
+    // If auto-forward enabled, forward to node
+    if (state.autoForward && filterResult.action === 'accept') {
       return this.forwardTransaction(decoded.hash, rawTx, requestId);
     }
 
@@ -587,7 +574,7 @@ case 'eth_getTransactionCount': {
 - [ ] Transaction decoding works for EIP-2930 transactions
 - [ ] Sender address is correctly recovered from signature
 - [ ] Gas price filtering rejects low-gas transactions
-- [ ] Paused mempool holds transactions
+- [ ] Auto-forward disabled holds transactions in local mempool
 - [ ] Replacement transaction detection works
 - [ ] Replacement requires 10% higher gas price
 - [ ] Transaction stored in database after interception
@@ -627,7 +614,7 @@ cast tx <hash> --rpc-url http://localhost:3000/rpc
 
 1. All transaction types can be decoded correctly
 2. Sender address recovered accurately from signature
-3. Filtering rules applied correctly (pause, gas price)
+3. Filtering rules applied correctly (gas price, auto-forward)
 4. Replacement transactions handled properly
 5. Transactions stored in database upon interception
 6. Local pending transactions returned by `eth_getTransactionByHash`

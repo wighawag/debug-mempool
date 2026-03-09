@@ -53,7 +53,7 @@ export interface PendingTransactionRow {
 }
 
 // Mempool state keys
-export type MempoolStateKey = 'paused' | 'min_gas_price' | 'auto_forward';
+export type MempoolStateKey = 'min_gas_price' | 'auto_forward';
 
 // Mempool statistics
 export interface MempoolStats {

@@ -2,7 +2,7 @@
 
 ## Objective
 
-Build a simple web interface for visualizing and managing the debug mempool. This UI allows developers to manually pause/resume the mempool, inspect pending transactions, and force-include or drop specific transactions without using curl or scripts.
+Build a simple web interface for visualizing and managing the debug mempool. This UI allows developers to toggle auto-forwarding, inspect pending transactions, and force-include or drop specific transactions without using curl or scripts.
 
 ## Prerequisites
 
@@ -52,7 +52,6 @@ export function getUIRoutes<CustomEnv extends Env>(
       const storage = config.storage;
 
       const state = {
-        paused: await storage.isPaused(),
         minGasPrice: await storage.getMinGasPrice(),
         autoForward: await storage.isAutoForward(),
       };
@@ -74,7 +73,6 @@ export function getUIRoutes<CustomEnv extends Env>(
     .get('/partials/state', async (c) => {
       const config = c.get('config');
       const state = {
-        paused: await config.storage.isPaused(),
         minGasPrice: await config.storage.getMinGasPrice(),
         autoForward: await config.storage.isAutoForward(),
       };
@@ -350,7 +348,6 @@ import { PendingTransaction, MempoolStats } from '../../mempool/types.js';
 
 export interface DashboardProps {
   state: {
-    paused: boolean;
     minGasPrice: bigint;
     autoForward: boolean;
   };
@@ -360,7 +357,7 @@ export interface DashboardProps {
 
 export function dashboard({ state, stats, pending }: DashboardProps) {
   const content = html`
-    ${state.paused ? html`<div class="paused-banner">⏸️ MEMPOOL PAUSED - Transactions are being held</div>` : ''}
+    ${!state.autoForward ? html`<div class="paused-banner">⏸️ AUTO-FORWARD DISABLED - Transactions are being held</div>` : ''}
     
     <div class="container">
       <div class="card">
@@ -402,7 +399,6 @@ export function dashboard({ state, stats, pending }: DashboardProps) {
 import { html } from 'hono/html';
 
 export interface StateControlsProps {
-  paused: boolean;
   minGasPrice: bigint;
   autoForward: boolean;
 }
@@ -413,28 +409,24 @@ export function stateControls(state: StateControlsProps) {
   return html`
     <div class="controls">
       <div>
-        <strong>Status:</strong>
-        ${state.paused 
-          ? html`<span class="status-badge status-dropped">Paused</span>`
-          : html`<span class="status-badge status-forwarded">Running</span>`
+        <strong>Auto-Forward:</strong>
+        ${state.autoForward
+          ? html`<span class="status-badge status-forwarded">Enabled</span>`
+          : html`<span class="status-badge status-dropped">Disabled</span>`
         }
       </div>
       
-      ${state.paused
+      ${state.autoForward
         ? html`
-            <button class="btn btn-success"
-                    hx-post="/api/mempool/resume"
-                    hx-swap="none"
-                    hx-on::after-request="htmx.trigger('#state-controls', 'htmx:load')">
-              ▶️ Resume
+            <button class="btn btn-warning"
+                    onclick="toggleAutoForward(false)">
+              ⏸️ Disable Auto-Forward
             </button>
           `
         : html`
-            <button class="btn btn-warning"
-                    hx-post="/api/mempool/pause"
-                    hx-swap="none"
-                    hx-on::after-request="htmx.trigger('#state-controls', 'htmx:load')">
-              ⏸️ Pause
+            <button class="btn btn-success"
+                    onclick="toggleAutoForward(true)">
+              ▶️ Enable Auto-Forward
             </button>
           `
       }
@@ -477,6 +469,17 @@ export function stateControls(state: StateControlsProps) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ minGasPrice: wei })
         }).then(() => htmx.trigger('#state-controls', 'htmx:load'));
+      }
+      
+      function toggleAutoForward(enabled) {
+        fetch('/api/mempool/auto-forward', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled })
+        }).then(() => {
+          htmx.trigger('#state-controls', 'htmx:load');
+          location.reload(); // Refresh to show/hide banner
+        });
       }
     </script>
   `;
@@ -660,7 +663,7 @@ flowchart TB
     end
     
     subgraph Actions
-        Pause[Pause/Resume]
+        AutoFwd[Toggle Auto-Forward]
         GasPrice[Set Gas Price]
         Flush[Flush All]
         Clear[Clear All]
@@ -671,7 +674,7 @@ flowchart TB
         Drop[Drop]
     end
     
-    State --> Pause
+    State --> AutoFwd
     State --> GasPrice
     State --> Flush
     State --> Clear
@@ -679,12 +682,12 @@ flowchart TB
     List --> Include
     List --> Drop
     
-    Pause -->|HTMX POST| API[/api/mempool/*]
-    GasPrice -->|HTMX POST| API
-    Flush -->|HTMX POST| API
-    Clear -->|HTMX DELETE| API
-    Include -->|HTMX POST| API
-    Drop -->|HTMX POST| API
+    AutoFwd -->|POST| API[/api/mempool/*]
+    GasPrice -->|POST| API
+    Flush -->|POST| API
+    Clear -->|DELETE| API
+    Include -->|POST| API
+    Drop -->|POST| API
     
     API -->|Trigger refresh| Dashboard
 ```
@@ -692,7 +695,7 @@ flowchart TB
 ## Testing Checklist
 
 - [ ] Dashboard loads with current state
-- [ ] Pause/Resume buttons work
+- [ ] Auto-forward toggle works
 - [ ] Gas price setting works
 - [ ] Flush All forwards all transactions
 - [ ] Clear All removes pending transactions
@@ -701,7 +704,7 @@ flowchart TB
 - [ ] Force Include works from list
 - [ ] Drop works from list
 - [ ] State controls refresh after actions
-- [ ] Paused banner shows when paused
+- [ ] Banner shows when auto-forward is disabled
 - [ ] Responsive layout on mobile
 
 ## Files to Create/Modify

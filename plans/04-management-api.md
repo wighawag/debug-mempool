@@ -45,9 +45,8 @@ export interface TransactionInfo {
 
 // Mempool state for API responses
 export interface MempoolStateInfo {
-  paused: boolean;
   minGasPrice: string;     // Hex string
-  autoForward: boolean;
+  autoForward: boolean;    // Default: true - automatically forward transactions
 }
 
 // Mempool statistics
@@ -108,7 +107,6 @@ export function getMempoolAPI<CustomEnv extends Env>(
       const storage = config.storage;
 
       const state: MempoolStateInfo = {
-        paused: await storage.isPaused(),
         minGasPrice: `0x${(await storage.getMinGasPrice()).toString(16)}`,
         autoForward: await storage.isAutoForward(),
       };
@@ -116,28 +114,6 @@ export function getMempoolAPI<CustomEnv extends Env>(
       return c.json<ApiResponse<MempoolStateInfo>>({
         success: true,
         data: state,
-      });
-    })
-
-    // POST /api/mempool/pause - Pause the mempool
-    .post('/pause', async (c) => {
-      const config = c.get('config');
-      await config.storage.setPaused(true);
-
-      return c.json<ApiResponse>({
-        success: true,
-        data: { paused: true },
-      });
-    })
-
-    // POST /api/mempool/resume - Resume the mempool
-    .post('/resume', async (c) => {
-      const config = c.get('config');
-      await config.storage.setPaused(false);
-
-      return c.json<ApiResponse>({
-        success: true,
-        data: { paused: false },
       });
     })
 
@@ -481,10 +457,8 @@ Add batch operations for efficiency:
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/mempool/state` | GET | Get current mempool state |
-| `/api/mempool/pause` | POST | Pause transaction forwarding |
-| `/api/mempool/resume` | POST | Resume transaction forwarding |
 | `/api/mempool/gas-price` | POST | Set minimum gas price |
-| `/api/mempool/auto-forward` | POST | Enable/disable auto-forward |
+| `/api/mempool/auto-forward` | POST | Enable/disable auto-forward (default: true) |
 
 ### Transaction Queries
 
@@ -510,9 +484,8 @@ Add batch operations for efficiency:
 ## Testing Checklist
 
 - [ ] `GET /api/mempool/state` returns current state
-- [ ] `POST /api/mempool/pause` pauses the mempool
-- [ ] `POST /api/mempool/resume` resumes the mempool
 - [ ] `POST /api/mempool/gas-price` sets minimum gas price
+- [ ] `POST /api/mempool/auto-forward` enables/disables auto-forward
 - [ ] `GET /api/mempool/stats` returns accurate statistics
 - [ ] `GET /api/mempool/pending` lists all pending transactions
 - [ ] `GET /api/mempool/tx/:hash` returns specific transaction
@@ -527,8 +500,10 @@ Add batch operations for efficiency:
 # Check mempool state
 curl http://localhost:3000/api/mempool/state
 
-# Pause the mempool
-curl -X POST http://localhost:3000/api/mempool/pause
+# Disable auto-forward to hold transactions
+curl -X POST http://localhost:3000/api/mempool/auto-forward \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}'
 
 # Set minimum gas price to 10 gwei
 curl -X POST http://localhost:3000/api/mempool/gas-price \

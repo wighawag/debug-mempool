@@ -208,15 +208,6 @@ export class MempoolStorage {
 	}
 
 	// Convenience state methods
-	async isPaused(): Promise<boolean> {
-		const value = await this.getState('paused');
-		return value === 'true';
-	}
-
-	async setPaused(paused: boolean): Promise<void> {
-		await this.setState('paused', paused.toString());
-	}
-
 	async getMinGasPrice(): Promise<bigint> {
 		const value = await this.getState('min_gas_price');
 		return BigInt(value ?? '0');

@@ -6,6 +6,7 @@ import {HTTPException} from 'hono/http-exception';
 import {Env} from './env.js';
 import {getDummyAPI} from './api/dummy.js';
 import {getRpcAPI} from './api/rpc.js';
+import {getMempoolAPI} from './api/mempool.js';
 import {getHealthAPI} from './api/health.js';
 
 export type {Env};
@@ -20,7 +21,7 @@ const corsSetup = cors({
 		'Content-Type',
 		'SIGNATURE',
 	],
-	allowMethods: ['POST', 'GET', 'HEAD', 'OPTIONS'],
+	allowMethods: ['POST', 'GET', 'HEAD', 'OPTIONS', 'DELETE'],
 	exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
 	maxAge: 600,
 	credentials: true,
@@ -33,12 +34,14 @@ export function createServer<CustomEnv extends Env>(
 
 	const dummy = getDummyAPI(options);
 	const rpc = getRpcAPI(options);
+	const mempool = getMempoolAPI(options);
 	const health = getHealthAPI(options);
 
 	return app
 		.use('/*', corsSetup)
 		.route('/', dummy)
 		.route('/rpc', rpc)
+		.route('/api/mempool', mempool)
 		.route('/health', health)
 		.onError((err, c) => {
 			const config = c.get('config');

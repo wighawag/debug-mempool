@@ -54,8 +54,7 @@ CREATE TABLE IF NOT EXISTS MempoolState (
 );
 
 -- Initialize default state
-INSERT OR IGNORE INTO MempoolState (key, value, updated_at) VALUES 
-    ('paused', 'false', 0),
+INSERT OR IGNORE INTO MempoolState (key, value, updated_at) VALUES
     ('min_gas_price', '0', 0),
     ('auto_forward', 'true', 0);
 ```
@@ -113,7 +112,7 @@ export interface PendingTransactionRow {
 }
 
 // Mempool state keys
-export type MempoolStateKey = 'paused' | 'min_gas_price' | 'auto_forward';
+export type MempoolStateKey = 'min_gas_price' | 'auto_forward';
 
 // Mempool statistics
 export interface MempoolStats {
@@ -356,15 +355,6 @@ export class MempoolStorage {
   }
 
   // Convenience state methods
-  async isPaused(): Promise<boolean> {
-    const value = await this.getState('paused');
-    return value === 'true';
-  }
-
-  async setPaused(paused: boolean): Promise<void> {
-    await this.setState('paused', paused.toString());
-  }
-
   async getMinGasPrice(): Promise<bigint> {
     const value = await this.getState('min_gas_price');
     return BigInt(value ?? '0');
@@ -444,7 +434,7 @@ Check existing patterns in the template for database initialization.
 - [ ] Can filter transactions by status, sender, gas price
 - [ ] Can update transaction status
 - [ ] Can remove/clear transactions
-- [ ] State management works (pause, min gas price)
+- [ ] State management works (min gas price, auto-forward)
 - [ ] Statistics are calculated correctly
 - [ ] Data survives server restart
 

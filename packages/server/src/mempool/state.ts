@@ -7,7 +7,6 @@ import {forwardRpcRequest, createJsonRpcResult, createJsonRpcError} from '../rpc
 import type {JsonRpcResponse} from '../rpc/types.js';
 
 export interface MempoolState {
-	isPaused: boolean;
 	minGasPrice: bigint;
 	autoForward: boolean;
 }
@@ -21,7 +20,6 @@ export class MempoolManager {
 	// Get current mempool state
 	async getState(): Promise<MempoolState> {
 		return {
-			isPaused: await this.storage.isPaused(),
 			minGasPrice: await this.storage.getMinGasPrice(),
 			autoForward: await this.storage.isAutoForward(),
 		};
@@ -53,7 +51,6 @@ export class MempoolManager {
 		// Apply filters
 		const filterResult = await applyFilters(decoded, {
 			storage: this.storage,
-			isPaused: state.isPaused,
 			minGasPrice: state.minGasPrice,
 		});
 
@@ -78,8 +75,8 @@ export class MempoolManager {
 			txType: decoded.txType,
 		});
 
-		// If not paused and auto-forward enabled, forward to node
-		if (!state.isPaused && state.autoForward && filterResult.action === 'accept') {
+		// If auto-forward enabled, forward to node
+		if (state.autoForward && filterResult.action === 'accept') {
 			return this.forwardTransaction(decoded.hash, rawTx, requestId);
 		}
 
