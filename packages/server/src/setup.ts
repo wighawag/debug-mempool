@@ -1,14 +1,14 @@
 import {MiddlewareHandler} from 'hono/types';
 import {ServerOptions} from './types.js';
 import {Env} from './env.js';
-// import {RemoteSQLStorage} from './storage/RemoteSQLStorage.js';
+import {MempoolStorage} from './storage/mempool.js';
 
 export type SetupOptions<CustomEnv extends Env> = {
 	serverOptions: ServerOptions<CustomEnv>;
 };
 
 export type Config<CustomEnv extends Env> = {
-	// storage: RemoteSQLStorage;
+	storage: MempoolStorage;
 	env: CustomEnv;
 };
 
@@ -25,20 +25,13 @@ export function setup<CustomEnv extends Env>(
 
 	return async (c, next) => {
 		const env = getEnv(c);
-
 		const db = getDB(c);
-		// use db
-		// const storage = new RemoteSQLStorage(db);
+		const storage = new MempoolStorage(db);
 
 		c.set('config', {
-			// storage,
+			storage,
 			env,
 		});
-
-		// // auto setup
-		// if (c.req.query('_initDB') == 'true') {
-		// 	await storage.setup();
-		// }
 
 		return next();
 	};
