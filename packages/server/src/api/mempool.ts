@@ -84,6 +84,16 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 			const body = await c.req.json<{enabled: boolean}>();
 			const config = c.get('config');
 
+			if (typeof body.enabled !== 'boolean') {
+				return c.json<ApiResponse>(
+					{
+						success: false,
+						error: 'enabled must be a boolean',
+					},
+					400
+				);
+			}
+
 			await config.storage.setAutoForward(body.enabled);
 
 			return c.json<ApiResponse>({

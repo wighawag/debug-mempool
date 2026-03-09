@@ -8,6 +8,7 @@ import {getDummyAPI} from './api/dummy.js';
 import {getRpcAPI} from './api/rpc.js';
 import {getMempoolAPI} from './api/mempool.js';
 import {getHealthAPI} from './api/health.js';
+import {getUIRoutes} from './ui/index.js';
 
 export type {Env};
 
@@ -36,6 +37,7 @@ export function createServer<CustomEnv extends Env>(
 	const rpc = getRpcAPI(options);
 	const mempool = getMempoolAPI(options);
 	const health = getHealthAPI(options);
+	const ui = getUIRoutes(options);
 
 	return app
 		.use('/*', corsSetup)
@@ -43,6 +45,7 @@ export function createServer<CustomEnv extends Env>(
 		.route('/rpc', rpc)
 		.route('/api/mempool', mempool)
 		.route('/health', health)
+		.route('/ui', ui)
 		.onError((err, c) => {
 			const config = c.get('config');
 			const env = config?.env || {};

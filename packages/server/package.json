@@ -43,11 +43,13 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "build:ts": "tsc --project tsconfig.json",
-    "build": "pnpm sql2ts && pnpm build:ts",
+    "build": "pnpm sql2ts && pnpm js2ts && pnpm css2ts && pnpm build:ts",
     "sql2ts": "node sql2ts.cjs ./src/schema/sql",
     "sql2ts:watch": "pnpm sql2ts && as-soon -w ./src/schema/sql pnpm sql2ts",
-    "css2ts": "node css2ts.cjs global",
-    "css2ts:watch": "pnpm css2ts && as-soon -w ./src/schema/css pnpm css2ts",
-    "dev": "as-soon -w src pnpm build:ts"
+    "css2ts": "node css2ts.cjs dashboard",
+    "css2ts:watch": "pnpm css2ts && as-soon -w ./src/ui/static/*.css pnpm css2ts",
+    "js2ts": "node js2ts.cjs htmx.min",
+    "js2ts:watch": "pnpm js2ts && as-soon -w ./src/ui/static/*.js pnpm js2ts",
+    "dev": "pnpm js2ts && pnpm css2ts && as-soon -w src pnpm build:ts"
   }
 }

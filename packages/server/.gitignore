@@ -9,5 +9,6 @@ node_modules
 
 *.sql.ts
 
-doc
-static
+/doc
+/static
+src/ui/static/*.ts

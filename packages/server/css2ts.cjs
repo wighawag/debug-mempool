@@ -1,9 +1,10 @@
 const fs = require('fs');
 const args = process.argv.slice(2);
 for (const arg of args) {
-	const CSSFilePath = `./src/dashboard/styles/css/${arg}.css`;
-	const TSFilePath = `./src/dashboard/styles/ts/${arg}.css.ts`;
-	const cssText = fs.readFileSync(CSSFilePath);
-	fs.mkdirSync('./src/dashboard/styles/ts', {recursive: true});
-	fs.writeFileSync(TSFilePath, `export default \`${cssText}\``);
+	const cssFilePath = `./src/ui/static/${arg}.css`;
+	const tsFilePath = `./src/ui/static/${arg}.css.ts`;
+	const cssText = fs.readFileSync(cssFilePath, 'utf8');
+	// Escape backticks and dollar signs in the content
+	const escaped = cssText.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+	fs.writeFileSync(tsFilePath, `export default \`${escaped}\`;`);
 }
