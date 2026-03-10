@@ -16,7 +16,8 @@ describe('MempoolStorage', () => {
 		it('adds and retrieves a transaction', async () => {
 			const tx = {
 				hash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef' as Hash,
-				rawTx: '0xf86c0184773594008252089470997970c51812dc3a010c7d01b50e0d17dc79c8880de0b6b3a76400008025a0abc...' as Hex,
+				rawTx:
+					'0xf86c0184773594008252089470997970c51812dc3a010c7d01b50e0d17dc79c8880de0b6b3a76400008025a0abc...' as Hex,
 				from: '0x70997970c51812dc3a010c7d01b50e0d17dc79c8' as Address,
 				to: '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc' as Address,
 				nonce: 0,
@@ -92,7 +93,7 @@ describe('MempoolStorage', () => {
 	describe('getTransaction', () => {
 		it('returns null for non-existent transaction', async () => {
 			const retrieved = await storage.getTransaction(
-				'0x0000000000000000000000000000000000000000000000000000000000000000' as Hash
+				'0x0000000000000000000000000000000000000000000000000000000000000000' as Hash,
 			);
 			expect(retrieved).toBeNull();
 		});
@@ -129,14 +130,14 @@ describe('MempoolStorage', () => {
 			// Mark one as forwarded
 			await storage.updateStatus(
 				'0x1111111111111111111111111111111111111111111111111111111111111111' as Hash,
-				'forwarded'
+				'forwarded',
 			);
 
 			const pending = await storage.getPendingTransactions();
 
 			expect(pending.length).toBe(1);
 			expect(pending[0].hash).toBe(
-				'0x2222222222222222222222222222222222222222222222222222222222222222'
+				'0x2222222222222222222222222222222222222222222222222222222222222222',
 			);
 		});
 
@@ -243,7 +244,7 @@ describe('MempoolStorage', () => {
 			});
 
 			const txs = await storage.getTransactionsBySender(
-				'0x70997970c51812dc3a010c7d01b50e0d17dc79c8' as Address
+				'0x70997970c51812dc3a010c7d01b50e0d17dc79c8' as Address,
 			);
 
 			expect(txs.length).toBe(3);
@@ -254,7 +255,7 @@ describe('MempoolStorage', () => {
 
 		it('returns empty array for sender with no transactions', async () => {
 			const txs = await storage.getTransactionsBySender(
-				'0x0000000000000000000000000000000000000000' as Address
+				'0x0000000000000000000000000000000000000000' as Address,
 			);
 			expect(txs).toEqual([]);
 		});
@@ -391,7 +392,7 @@ describe('MempoolStorage', () => {
 			// Mark one as forwarded (should not be cleared)
 			await storage.updateStatus(
 				'0x1111111111111111111111111111111111111111111111111111111111111111' as Hash,
-				'forwarded'
+				'forwarded',
 			);
 
 			await storage.clearPending();
@@ -401,7 +402,7 @@ describe('MempoolStorage', () => {
 
 			// The forwarded one should still exist
 			const forwarded = await storage.getTransaction(
-				'0x1111111111111111111111111111111111111111111111111111111111111111' as Hash
+				'0x1111111111111111111111111111111111111111111111111111111111111111' as Hash,
 			);
 			expect(forwarded).not.toBeNull();
 			expect(forwarded!.status).toBe('forwarded');
@@ -446,12 +447,12 @@ describe('MempoolStorage', () => {
 
 			await storage.updateStatus(
 				'0x1111111111111111111111111111111111111111111111111111111111111111' as Hash,
-				'forwarded'
+				'forwarded',
 			);
 
 			await storage.updateStatus(
 				'0x2222222222222222222222222222222222222222222222222222222222222222' as Hash,
-				'dropped'
+				'dropped',
 			);
 
 			const stats = await storage.getStats();
@@ -583,14 +584,18 @@ describe('MempoolStorage', () => {
 
 			const conflicts = await storage.getNonceConflicts();
 			expect(conflicts.size).toBe(1);
-			
+
 			const key = `${from.toLowerCase()}:0`;
 			expect(conflicts.has(key)).toBe(true);
-			
+
 			const hashes = conflicts.get(key)!;
 			expect(hashes.length).toBe(2);
-			expect(hashes).toContain('0x1111111111111111111111111111111111111111111111111111111111111111');
-			expect(hashes).toContain('0x2222222222222222222222222222222222222222222222222222222222222222');
+			expect(hashes).toContain(
+				'0x1111111111111111111111111111111111111111111111111111111111111111',
+			);
+			expect(hashes).toContain(
+				'0x2222222222222222222222222222222222222222222222222222222222222222',
+			);
 		});
 
 		it('only includes pending transactions in conflicts', async () => {
@@ -624,7 +629,7 @@ describe('MempoolStorage', () => {
 			// Mark one as forwarded
 			await storage.updateStatus(
 				'0x1111111111111111111111111111111111111111111111111111111111111111' as Hash,
-				'forwarded'
+				'forwarded',
 			);
 
 			// Should not be a conflict anymore since only one is pending

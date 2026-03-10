@@ -50,7 +50,6 @@ export function stateControls(state: StateControlsProps) {
 							Switch to Node-like
 						</button>
 					`}
-
 			${state.replacementEnabled
 				? html`
 						<div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -64,7 +63,9 @@ export function stateControls(state: StateControlsProps) {
 								style="width: 80px;"
 							/>
 							<span>%</span>
-							<button class="btn btn-sm" onclick="setReplacementBump()">Set</button>
+							<button class="btn btn-sm" onclick="setReplacementBump()">
+								Set
+							</button>
 						</div>
 					`
 				: ''}

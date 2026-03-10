@@ -18,7 +18,7 @@ export interface FilterContext {
 // Main filter function that applies all rules
 export async function applyFilters(
 	tx: DecodedTransaction,
-	context: FilterContext
+	context: FilterContext,
 ): Promise<FilterResult> {
 	// Check minimum gas price
 	const effectiveGasPrice = getEffectiveGasPrice(tx);
@@ -33,11 +33,14 @@ export async function applyFilters(
 	// Only check replacement if enabled
 	if (context.replacementEnabled) {
 		const existingTxs = await context.storage.getTransactionsBySender(tx.from);
-		const conflicting = existingTxs.find((existing) => existing.nonce === tx.nonce);
+		const conflicting = existingTxs.find(
+			(existing) => existing.nonce === tx.nonce,
+		);
 
 		if (conflicting) {
 			// Check if new transaction has higher gas price (replacement)
-			const existingPrice = conflicting.maxFeePerGas ?? conflicting.gasPrice ?? 0n;
+			const existingPrice =
+				conflicting.maxFeePerGas ?? conflicting.gasPrice ?? 0n;
 			const newPrice = getEffectiveGasPrice(tx);
 
 			// Use configurable bump percentage
@@ -56,7 +59,7 @@ export async function applyFilters(
 			await context.storage.updateStatus(
 				conflicting.hash as Hash,
 				'replaced',
-				`Replaced by ${tx.hash}`
+				`Replaced by ${tx.hash}`,
 			);
 		}
 	}
@@ -72,7 +75,7 @@ export async function applyFilters(
 export async function checkNonceGap(
 	tx: DecodedTransaction,
 	storage: MempoolStorage,
-	getOnChainNonce: (address: string) => Promise<number>
+	getOnChainNonce: (address: string) => Promise<number>,
 ): Promise<{hasGap: boolean; expectedNonce?: number}> {
 	const onChainNonce = await getOnChainNonce(tx.from);
 

@@ -27,7 +27,7 @@ describe('Mempool Management API', () => {
 
 		app = createServer({
 			getDB: () => db,
-			getEnv: () => ({RPC_URL: rpcUrl} as Env),
+			getEnv: () => ({RPC_URL: rpcUrl}) as Env,
 		});
 	});
 
@@ -177,7 +177,7 @@ describe('Mempool Management API', () => {
 
 			const res = await app.request(
 				'/api/mempool/pending?from=0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
-				{method: 'GET'}
+				{method: 'GET'},
 			);
 
 			const json = await res.json();
@@ -236,7 +236,9 @@ describe('Mempool Management API', () => {
 			const json = await res.json();
 
 			expect(json.success).toBe(true);
-			expect(json.data.every((tx: any) => tx.status === 'forwarded')).toBe(true);
+			expect(json.data.every((tx: any) => tx.status === 'forwarded')).toBe(
+				true,
+			);
 		});
 	});
 
@@ -258,7 +260,7 @@ describe('Mempool Management API', () => {
 		it('returns 404 for non-existent transaction', async () => {
 			const res = await app.request(
 				'/api/mempool/tx/0x0000000000000000000000000000000000000000000000000000000000000000',
-				{method: 'GET'}
+				{method: 'GET'},
 			);
 
 			expect(res.status).toBe(404);
@@ -275,7 +277,7 @@ describe('Mempool Management API', () => {
 
 			const res = await app.request(
 				'/api/mempool/sender/0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
-				{method: 'GET'}
+				{method: 'GET'},
 			);
 
 			const json = await res.json();
@@ -306,7 +308,7 @@ describe('Mempool Management API', () => {
 		it('returns 400 for non-existent transaction', async () => {
 			const res = await app.request(
 				'/api/mempool/include/0x0000000000000000000000000000000000000000000000000000000000000000',
-				{method: 'POST'}
+				{method: 'POST'},
 			);
 
 			expect(res.status).toBe(400);
@@ -339,7 +341,7 @@ describe('Mempool Management API', () => {
 		it('returns 404 for non-existent transaction', async () => {
 			const res = await app.request(
 				'/api/mempool/drop/0x0000000000000000000000000000000000000000000000000000000000000000',
-				{method: 'POST'}
+				{method: 'POST'},
 			);
 
 			expect(res.status).toBe(404);

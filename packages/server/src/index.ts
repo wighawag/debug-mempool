@@ -42,7 +42,7 @@ export function createServer<CustomEnv extends Env>(
 	return app
 		.use('/*', corsSetup)
 		.route('/', dummy)
-		.route('/', rpc)  // Also mount RPC at root for standard Ethereum JSON-RPC compatibility
+		.route('/', rpc) // Also mount RPC at root for standard Ethereum JSON-RPC compatibility
 		.route('/rpc', rpc)
 		.route('/api/mempool', mempool)
 		.route('/health', health)

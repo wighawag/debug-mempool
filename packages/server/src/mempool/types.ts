@@ -1,7 +1,11 @@
 import type {Address, Hash, Hex} from 'viem';
 
 // Transaction status in the local mempool
-export type TransactionStatus = 'pending' | 'forwarded' | 'dropped' | 'replaced';
+export type TransactionStatus =
+	| 'pending'
+	| 'forwarded'
+	| 'dropped'
+	| 'replaced';
 
 // Transaction type enum
 export type TransactionType = 'legacy' | 'eip2930' | 'eip1559' | 'eip4844';
@@ -53,7 +57,11 @@ export interface PendingTransactionRow {
 }
 
 // Mempool state keys
-export type MempoolStateKey = 'min_gas_price' | 'auto_forward' | 'replacement_enabled' | 'min_replacement_bump';
+export type MempoolStateKey =
+	| 'min_gas_price'
+	| 'auto_forward'
+	| 'replacement_enabled'
+	| 'min_replacement_bump';
 
 // Mempool statistics
 export interface MempoolStats {

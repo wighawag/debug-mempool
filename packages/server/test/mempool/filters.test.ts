@@ -1,5 +1,9 @@
 import {describe, it, expect, beforeAll, beforeEach} from 'vitest';
-import {applyFilters, checkNonceGap, FilterContext} from '../../src/mempool/filters.js';
+import {
+	applyFilters,
+	checkNonceGap,
+	FilterContext,
+} from '../../src/mempool/filters.js';
 import {decodeRawTransaction} from '../../src/mempool/decoder.js';
 import {MempoolStorage} from '../../src/storage/mempool.js';
 import {createTestDatabase} from '../utils/db.js';

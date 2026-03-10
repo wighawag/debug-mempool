@@ -4,9 +4,18 @@ import {
 	validateTransaction,
 	getEffectiveGasPrice,
 } from '../../src/mempool/decoder.js';
-import {createSignedTransaction, createSignedEIP2930Transaction} from '../utils/tx.js';
+import {
+	createSignedTransaction,
+	createSignedEIP2930Transaction,
+} from '../utils/tx.js';
 import {setupTestEnvironment, TEST_RECIPIENT} from '../setup.js';
-import {parseGwei, parseEther, type Address, encodeFunctionData, keccak256} from 'viem';
+import {
+	parseGwei,
+	parseEther,
+	type Address,
+	encodeFunctionData,
+	keccak256,
+} from 'viem';
 
 describe('Transaction Decoder', () => {
 	let chainId: number;
@@ -29,8 +38,12 @@ describe('Transaction Decoder', () => {
 			const decoded = await decodeRawTransaction(rawTx);
 
 			expect(decoded.txType).toBe('legacy');
-			expect(decoded.from.toLowerCase()).toBe('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-			expect(decoded.to?.toLowerCase()).toBe('0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc');
+			expect(decoded.from.toLowerCase()).toBe(
+				'0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
+			);
+			expect(decoded.to?.toLowerCase()).toBe(
+				'0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc',
+			);
 			expect(decoded.value).toBe(parseEther('1'));
 			expect(decoded.gasPrice).toBe(parseGwei('10'));
 			expect(decoded.nonce).toBe(0);
@@ -53,7 +66,9 @@ describe('Transaction Decoder', () => {
 			expect(decoded.maxFeePerGas).toBe(parseGwei('20'));
 			expect(decoded.maxPriorityFeePerGas).toBe(parseGwei('2'));
 			expect(decoded.gasPrice).toBeUndefined();
-			expect(decoded.from.toLowerCase()).toBe('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
+			expect(decoded.from.toLowerCase()).toBe(
+				'0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
+			);
 		});
 
 		it('decodes EIP-2930 transaction', async () => {
@@ -66,7 +81,9 @@ describe('Transaction Decoder', () => {
 				accessList: [
 					{
 						address: TEST_RECIPIENT as Address,
-						storageKeys: ['0x0000000000000000000000000000000000000000000000000000000000000001'],
+						storageKeys: [
+							'0x0000000000000000000000000000000000000000000000000000000000000001',
+						],
 					},
 				],
 			});

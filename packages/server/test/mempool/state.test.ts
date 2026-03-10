@@ -154,7 +154,7 @@ describe('MempoolManager', () => {
 			const manager = new MempoolManager(storage, rpcUrl);
 
 			const result = await manager.forceInclude(
-				'0x0000000000000000000000000000000000000000000000000000000000000000' as Hash
+				'0x0000000000000000000000000000000000000000000000000000000000000000' as Hash,
 			);
 
 			expect(result.success).toBe(false);
@@ -220,7 +220,7 @@ describe('MempoolManager', () => {
 			const manager = new MempoolManager(storage, rpcUrl);
 
 			const result = await manager.dropTransaction(
-				'0x0000000000000000000000000000000000000000000000000000000000000000' as Hash
+				'0x0000000000000000000000000000000000000000000000000000000000000000' as Hash,
 			);
 
 			expect(result).toBe(false);

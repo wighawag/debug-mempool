@@ -39,11 +39,7 @@ export function dashboard({state, stats, pending, conflicts}: DashboardProps) {
 
 			<div class="card">
 				<h2>Statistics</h2>
-				<div
-					id="stats-card"
-					hx-get="/ui/partials/stats"
-					hx-trigger="every 5s"
-				>
+				<div id="stats-card" hx-get="/ui/partials/stats" hx-trigger="every 5s">
 					${raw(statsCard(stats))}
 				</div>
 			</div>

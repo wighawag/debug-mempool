@@ -19,7 +19,9 @@ export interface TransactionParams {
  * Create a signed raw transaction for testing.
  * Supports both legacy and EIP-1559 transactions.
  */
-export async function createSignedTransaction(params: TransactionParams): Promise<Hex> {
+export async function createSignedTransaction(
+	params: TransactionParams,
+): Promise<Hex> {
 	const privateKey = params.privateKey ?? TEST_PRIVATE_KEY;
 	const account = privateKeyToAccount(privateKey);
 

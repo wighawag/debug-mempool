@@ -3,7 +3,12 @@ import {ServerOptions} from '../types.js';
 import {setup} from '../setup.js';
 import {Env} from '../env.js';
 import {MempoolManager} from '../mempool/state.js';
-import {ApiResponse, TransactionInfo, MempoolStateInfo, MempoolStatsInfo} from './types.js';
+import {
+	ApiResponse,
+	TransactionInfo,
+	MempoolStateInfo,
+	MempoolStatsInfo,
+} from './types.js';
 import {PendingTransaction, TransactionStatus} from '../mempool/types.js';
 import type {Hash} from 'viem';
 
@@ -17,8 +22,12 @@ function toTransactionInfo(tx: PendingTransaction): TransactionInfo {
 		to: tx.to,
 		nonce: tx.nonce,
 		gasPrice: `0x${effectiveGasPrice.toString(16)}`,
-		maxFeePerGas: tx.maxFeePerGas ? `0x${tx.maxFeePerGas.toString(16)}` : undefined,
-		maxPriorityFee: tx.maxPriorityFeePerGas ? `0x${tx.maxPriorityFeePerGas.toString(16)}` : undefined,
+		maxFeePerGas: tx.maxFeePerGas
+			? `0x${tx.maxFeePerGas.toString(16)}`
+			: undefined,
+		maxPriorityFee: tx.maxPriorityFeePerGas
+			? `0x${tx.maxPriorityFeePerGas.toString(16)}`
+			: undefined,
 		gasLimit: `0x${tx.gasLimit.toString(16)}`,
 		value: `0x${tx.value.toString(16)}`,
 		data: tx.data,
@@ -30,7 +39,9 @@ function toTransactionInfo(tx: PendingTransaction): TransactionInfo {
 	};
 }
 
-export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<CustomEnv>) {
+export function getMempoolAPI<CustomEnv extends Env>(
+	options: ServerOptions<CustomEnv>,
+) {
 	const app = new Hono<{Bindings: CustomEnv}>()
 		.use(setup({serverOptions: options}))
 
@@ -69,7 +80,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'Invalid gas price format',
 					},
-					400
+					400,
 				);
 			}
 
@@ -92,7 +103,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'enabled must be a boolean',
 					},
-					400
+					400,
 				);
 			}
 
@@ -115,7 +126,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'enabled must be a boolean',
 					},
-					400
+					400,
 				);
 			}
 
@@ -132,13 +143,17 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 			const body = await c.req.json<{percent: number}>();
 			const config = c.get('config');
 
-			if (typeof body.percent !== 'number' || body.percent < 0 || body.percent > 1000) {
+			if (
+				typeof body.percent !== 'number' ||
+				body.percent < 0 ||
+				body.percent > 1000
+			) {
 				return c.json<ApiResponse>(
 					{
 						success: false,
 						error: 'percent must be a number between 0 and 1000',
 					},
-					400
+					400,
 				);
 			}
 
@@ -162,7 +177,9 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 				totalPending: stats.totalPending,
 				totalForwarded: stats.totalForwarded,
 				totalDropped: stats.totalDropped,
-				oldestPendingAge: stats.oldestPending ? now - stats.oldestPending : undefined,
+				oldestPendingAge: stats.oldestPending
+					? now - stats.oldestPending
+					: undefined,
 				uniqueSenders: stats.uniqueSenders,
 			};
 
@@ -224,7 +241,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'Transaction not found',
 					},
-					404
+					404,
 				);
 			}
 
@@ -261,7 +278,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'RPC_URL not configured',
 					},
-					500
+					500,
 				);
 			}
 
@@ -274,7 +291,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: result.error,
 					},
-					400
+					400,
 				);
 			}
 
@@ -288,7 +305,9 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 		.post('/drop/:hash', async (c) => {
 			const hash = c.req.param('hash') as Hash;
 			const config = c.get('config');
-			const body = await c.req.json<{reason?: string}>().catch(() => ({reason: undefined}));
+			const body = await c.req
+				.json<{reason?: string}>()
+				.catch(() => ({reason: undefined}));
 
 			// Check if transaction exists and is pending
 			const tx = await config.storage.getTransaction(hash);
@@ -298,7 +317,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'Transaction not found',
 					},
-					404
+					404,
 				);
 			}
 
@@ -308,11 +327,15 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: `Transaction is ${tx.status}, not pending`,
 					},
-					400
+					400,
 				);
 			}
 
-			await config.storage.updateStatus(hash, 'dropped', body.reason ?? 'Manually dropped');
+			await config.storage.updateStatus(
+				hash,
+				'dropped',
+				body.reason ?? 'Manually dropped',
+			);
 
 			return c.json<ApiResponse>({
 				success: true,
@@ -332,7 +355,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'RPC_URL not configured',
 					},
-					500
+					500,
 				);
 			}
 
@@ -368,7 +391,11 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 			for (const hash of body.hashes) {
 				const tx = await config.storage.getTransaction(hash as Hash);
 				if (tx && tx.status === 'pending') {
-					await config.storage.updateStatus(hash as Hash, 'dropped', body.reason ?? 'Batch drop');
+					await config.storage.updateStatus(
+						hash as Hash,
+						'dropped',
+						body.reason ?? 'Batch drop',
+					);
 					results.push({hash, dropped: true});
 				} else {
 					results.push({hash, dropped: false});
@@ -395,7 +422,7 @@ export function getMempoolAPI<CustomEnv extends Env>(options: ServerOptions<Cust
 						success: false,
 						error: 'RPC_URL not configured',
 					},
-					500
+					500,
 				);
 			}
 

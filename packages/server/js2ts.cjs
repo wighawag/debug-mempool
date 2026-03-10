@@ -5,6 +5,9 @@ for (const arg of args) {
 	const tsFilePath = `./src/ui/static/${arg}.js.ts`;
 	const jsText = fs.readFileSync(jsFilePath, 'utf8');
 	// Escape backticks and dollar signs in the content
-	const escaped = jsText.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+	const escaped = jsText
+		.replace(/\\/g, '\\\\')
+		.replace(/`/g, '\\`')
+		.replace(/\$/g, '\\$');
 	fs.writeFileSync(tsFilePath, `export default \`${escaped}\`;`);
 }

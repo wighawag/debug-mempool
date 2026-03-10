@@ -27,7 +27,7 @@ describe('RPC API', () => {
 
 		app = createServer({
 			getDB: () => db,
-			getEnv: () => ({RPC_URL: rpcUrl} as Env),
+			getEnv: () => ({RPC_URL: rpcUrl}) as Env,
 		});
 	});
 
@@ -227,8 +227,12 @@ describe('RPC API', () => {
 			expect(json.result.hash).toBe(hash);
 			expect(json.result.blockHash).toBeNull(); // Pending transaction
 			expect(json.result.blockNumber).toBeNull();
-			expect(json.result.from.toLowerCase()).toBe('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-			expect(json.result.to.toLowerCase()).toBe('0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc');
+			expect(json.result.from.toLowerCase()).toBe(
+				'0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
+			);
+			expect(json.result.to.toLowerCase()).toBe(
+				'0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc',
+			);
 		});
 
 		it('forwards to node for non-pending transaction', async () => {
@@ -239,7 +243,9 @@ describe('RPC API', () => {
 					jsonrpc: '2.0',
 					id: 1,
 					method: 'eth_getTransactionByHash',
-					params: ['0x0000000000000000000000000000000000000000000000000000000000000000'],
+					params: [
+						'0x0000000000000000000000000000000000000000000000000000000000000000',
+					],
 				}),
 			});
 

@@ -64,7 +64,10 @@ export function getUIRoutes<CustomEnv extends Env>(
 				return c.html(dashboard({state, stats, pending, conflicts}));
 			} catch (error) {
 				console.error('Dashboard error:', error);
-				return c.html(errorPage('Failed to load dashboard. Please try again.'), 500);
+				return c.html(
+					errorPage('Failed to load dashboard. Please try again.'),
+					500,
+				);
 			}
 		})
 
@@ -72,12 +75,19 @@ export function getUIRoutes<CustomEnv extends Env>(
 		.get('/partials/transactions', async (c) => {
 			try {
 				const config = c.get('config');
-				const pending = await config.storage.getPendingTransactions({limit: 50});
+				const pending = await config.storage.getPendingTransactions({
+					limit: 50,
+				});
 				const conflicts = await config.storage.getNonceConflicts();
 				return c.html(transactionList(pending, conflicts));
 			} catch (error) {
 				console.error('Transaction list error:', error);
-				return c.html(html`<div class="empty-state"><p>Failed to load transactions</p></div>`, 500);
+				return c.html(
+					html`<div class="empty-state">
+						<p>Failed to load transactions</p>
+					</div>`,
+					500,
+				);
 			}
 		})
 
@@ -94,7 +104,10 @@ export function getUIRoutes<CustomEnv extends Env>(
 				return c.html(stateControls(state));
 			} catch (error) {
 				console.error('State controls error:', error);
-				return c.html(html`<div class="empty-state"><p>Failed to load controls</p></div>`, 500);
+				return c.html(
+					html`<div class="empty-state"><p>Failed to load controls</p></div>`,
+					500,
+				);
 			}
 		})
 
@@ -106,7 +119,10 @@ export function getUIRoutes<CustomEnv extends Env>(
 				return c.html(statsCard(stats));
 			} catch (error) {
 				console.error('Stats error:', error);
-				return c.html(html`<div class="empty-state"><p>Failed to load stats</p></div>`, 500);
+				return c.html(
+					html`<div class="empty-state"><p>Failed to load stats</p></div>`,
+					500,
+				);
 			}
 		});
 

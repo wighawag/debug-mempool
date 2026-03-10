@@ -4,7 +4,7 @@ import {formatGasPrice, formatEthValue, formatTimeAgo} from '../utils.js';
 
 export function transactionList(
 	transactions: PendingTransaction[],
-	conflicts?: Map<string, string[]>
+	conflicts?: Map<string, string[]>,
 ) {
 	if (transactions.length === 0) {
 		return html`
@@ -55,7 +55,11 @@ export function transactionList(
 							<td>
 								${tx.nonce}
 								${hasConflict(tx)
-									? html`<span class="conflict-badge" title="Multiple TXs with same nonce">⚠️</span>`
+									? html`<span
+											class="conflict-badge"
+											title="Multiple TXs with same nonce"
+											>⚠️</span
+										>`
 									: ''}
 							</td>
 							<td>${formatTimeAgo(tx.createdAt)}</td>

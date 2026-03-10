@@ -26,7 +26,9 @@ export interface DecodedTransaction {
 	txType: TransactionType;
 }
 
-export async function decodeRawTransaction(rawTx: string): Promise<DecodedTransaction> {
+export async function decodeRawTransaction(
+	rawTx: string,
+): Promise<DecodedTransaction> {
 	const hexTx = rawTx as TransactionSerialized;
 
 	// Parse the transaction
@@ -78,7 +80,10 @@ export async function decodeRawTransaction(rawTx: string): Promise<DecodedTransa
 }
 
 // Validate transaction basics
-export function validateTransaction(tx: DecodedTransaction): {valid: boolean; error?: string} {
+export function validateTransaction(tx: DecodedTransaction): {
+	valid: boolean;
+	error?: string;
+} {
 	if (!tx.from) {
 		return {valid: false, error: 'Invalid signature: cannot recover sender'};
 	}
