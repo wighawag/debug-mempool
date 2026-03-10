@@ -1,9 +1,7 @@
 {
   "name": "purgatory-cf-worker",
+  "private":true,
   "version": "0.0.0",
-  "publishConfig": {
-    "access": "public"
-  },
   "type": "module",
   "files": [
     "src",
@@ -14,7 +12,7 @@
     "named-logs-context": "^0.1.1",
     "remote-sql-d1": "^0.0.6",
     "workers-logger": "0.2.1",
-    "purgatory-app": "workspace:*"
+    "purgatory-core": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.5.36",
@@ -30,7 +28,7 @@
     "prepare": "set-defaults .",
     "deploy:production": "wrangler -e production deploy --minify",
     "dev": "pnpm init-db && wrangler dev --log-level error --port 8545",
-    "init-db": "ldenv wrangler d1 execute template-agnostic-db --local --file=node_modules/purgatory-app/src/schema/sql/db.sql",
+    "init-db": "ldenv wrangler d1 execute template-agnostic-db --local --file=node_modules/purgatory-core/src/schema/sql/db.sql",
     "test": "vitest",
     "format:check": "prettier --check .",
     "format": "prettier --write ."

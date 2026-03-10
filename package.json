@@ -17,7 +17,7 @@
     "---------------------- DEV ----------------------": "",
     "cf-worker:dev": "pnpm --filter purgatory-cf-worker dev",
     "nodejs:dev": "pnpm --filter purgatory-nodejs dev",
-    "server:dev": "pnpm --filter purgatory-app dev",
+    "server:dev": "pnpm --filter purgatory-core dev",
     "---------------------- DEPLOY ----------------------": "",
     "build": "ldenv pnpm run -r build",
     "deploy:cf": "pnpm run --filter purgatory-server-cf-worker deploy",

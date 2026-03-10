@@ -81,12 +81,12 @@ importers:
       named-logs-context:
         specifier: ^0.1.1
         version: 0.1.1
+      purgatory-core:
+        specifier: workspace:*
+        version: link:../../packages/server
       remote-sql-d1:
         specifier: ^0.0.6
         version: 0.0.6(@cloudflare/workers-types@4.20250121.0)
-      purgatory-app:
-        specifier: workspace:*
-        version: link:../../packages/server
       workers-logger:
         specifier: 0.2.1
         version: 0.2.1
@@ -133,12 +133,12 @@ importers:
       named-logs-context:
         specifier: ^0.1.1
         version: 0.1.1
+      purgatory-core:
+        specifier: workspace:*
+        version: link:../../packages/server
       remote-sql-libsql:
         specifier: ^0.0.6
         version: 0.0.6(@libsql/core@0.15.15)
-      purgatory-app:
-        specifier: workspace:*
-        version: link:../../packages/server
     devDependencies:
       '@types/node':
         specifier: ^22.13.10

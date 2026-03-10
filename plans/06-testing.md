@@ -388,13 +388,13 @@ import {testClient} from 'hono/testing';
 
 ```bash
 # Run all tests
-pnpm --filter purgatory-app test
+pnpm --filter purgatory-core test
 
 # Run specific test file
-pnpm --filter purgatory-app test test/mempool/decoder.test.ts
+pnpm --filter purgatory-core test test/mempool/decoder.test.ts
 
 # Run with coverage
-pnpm --filter purgatory-app test -- --coverage
+pnpm --filter purgatory-core test -- --coverage
 ```
 
 ---

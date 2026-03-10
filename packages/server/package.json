@@ -1,7 +1,7 @@
 {
-  "name": "purgatory-app",
+  "name": "purgatory-core",
   "version": "0.0.0",
-  "description": "purgatory server app",
+  "description": "purgatory server hono app",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import "named-logs-context";
-import { createServer, type Env } from "purgatory-app";
+import { createServer, type Env } from "purgatory-core";
 import { serve } from "@hono/node-server";
 import { RemoteLibSQL } from "remote-sql-libsql";
 import { createClient } from "@libsql/client";

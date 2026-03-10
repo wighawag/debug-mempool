@@ -1,4 +1,4 @@
-import {Env} from 'purgatory-app';
+import {Env} from 'purgatory-core';
 
 export type CloudflareEnv = Env & {
 	DB: D1Database;
