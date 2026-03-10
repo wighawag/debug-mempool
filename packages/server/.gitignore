@@ -12,6 +12,3 @@ node_modules
 /doc
 /static
 src/ui/static/*.ts
-
-README.md
-LICENSE

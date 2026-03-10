@@ -11,6 +11,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "prepublishOnly": "pnpm -r prepublishOnly",
     "release": "pnpm prepublishOnly && git push --all && pnpm changeset publish && git push --tags",
     "---------------------- FORMAT ----------------------": "",
     "format": "pnpm -r format",

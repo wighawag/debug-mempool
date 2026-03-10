@@ -39,7 +39,6 @@
     "vitest": "^4.0.18"
   },
   "scripts": {
-    "prepublishOnly": "cp ../../README.md ./ && cp ../../LICENSE ./",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "test": "vitest run",
