@@ -9,6 +9,9 @@ import {
 	MempoolStats,
 	TransactionFilter,
 } from '../mempool/types.js';
+import setupTables from '../schema/ts/db.sql.js';
+import dropTables from '../schema/ts/drop.sql.js';
+import {sqlToStatements} from './utils.js';
 
 export class MempoolStorage {
 	constructor(private db: RemoteSQL) {}
@@ -313,5 +316,28 @@ export class MempoolStorage {
 			conflicts.set(key, row.hashes.split(','));
 		}
 		return conflicts;
+	}
+
+	async setup() {
+		const statements = sqlToStatements(setupTables);
+		// The following do not work on bun sqlite:
+		//  (seems like prepared statement are partially executed and index cannot be prepared when table is not yet created)
+		// await this.db.batch(statements.map((v) => this.db.prepare(v)));
+		for (const statement of statements) {
+			await this.db.prepare(statement).all();
+		}
+	}
+	async reset() {
+		const dropStatements = sqlToStatements(dropTables);
+		const statements = sqlToStatements(setupTables);
+		const allStatements = dropStatements.concat(statements);
+
+		// The following do not work on bun sqlite:
+		//  (seems like prepared statement are partially executed and index cannot be prepared when table is not yet created)
+		// await this.db.batch(allStatements.map((v) => this.db.prepare(v)));
+		for (const statement of allStatements) {
+			// console.log(`STATEMENT: ${statement}`);
+			await this.db.prepare(statement).all();
+		}
 	}
 }

@@ -31,7 +31,7 @@
   },
   "scripts": {
     "prepare": "set-defaults .env.default",
-    "dev": "tsx watch src/cli.ts --port 8545",
+    "dev": "tsx watch src/cli.ts --port 8545 --db sqlite.db",
     "build": "tsc",
     "build:watch": "as-soon -w src tsc"
   }

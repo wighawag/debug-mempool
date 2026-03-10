@@ -9,6 +9,7 @@ import {getRpcAPI} from './api/rpc.js';
 import {getMempoolAPI} from './api/mempool.js';
 import {getHealthAPI} from './api/health.js';
 import {getUIRoutes} from './ui/index.js';
+import {getAdminAPI} from './api/admin/index.js';
 
 export type {Env};
 
@@ -36,6 +37,7 @@ export function createServer<CustomEnv extends Env>(
 	const dummy = getDummyAPI(options);
 	const rpc = getRpcAPI(options);
 	const mempool = getMempoolAPI(options);
+	const admin = getAdminAPI(options);
 	const health = getHealthAPI(options);
 	const ui = getUIRoutes(options);
 
@@ -45,6 +47,7 @@ export function createServer<CustomEnv extends Env>(
 		.route('/', rpc) // Also mount RPC at root for standard Ethereum JSON-RPC compatibility
 		.route('/rpc', rpc)
 		.route('/api/mempool', mempool)
+		.route('/api/admin', admin)
 		.route('/health', health)
 		.route('/ui', ui)
 		.onError((err, c) => {

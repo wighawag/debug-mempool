@@ -31,6 +31,7 @@ async function main() {
     .usage(`purgatory-nodejs [--port 2000] [--rpc-url <url>]`)
     .description("run purgatory-nodejs as a node process")
     .option("-p, --port <port>", "port to listen on", "2000")
+    .option("--db <sqlite.db>", "path to sqlite db file")
     .option("--rpc-url <url>", "RPC URL for the Ethereum node to proxy to")
     .option("--reset-db", "whether to reset the db");
 
@@ -39,6 +40,8 @@ async function main() {
   type Options = {
     port?: string;
     rpcUrl?: string;
+    resetDb?: boolean;
+    db?: string;
   };
 
   const options: Options = program.opts();
@@ -50,7 +53,10 @@ async function main() {
     RPC_URL: options.rpcUrl || process.env.RPC_URL || "http://localhost:8545",
   };
 
-  const db = env.DB;
+  let db = env.DB;
+  if (options.db) {
+    db = `file:///${path.resolve(options.db)}`;
+  }
 
   const client = createClient({
     url: db,
@@ -62,16 +68,28 @@ async function main() {
     getEnv: () => env,
   });
 
-  if (db === ":memory:") {
-    // TODO
-    // console.log(`executing setup...`);
-    // await app.fetch(
-    //   new Request("http://localhost/admin/setup", {
-    //     // headers: {
-    //     //   Authorization: `Basic ${btoa(`admin:${TOKEN_ADMIN}`)}`,
-    //     // },
-    //   }),
-    // );
+  console.log(`setting up db...`);
+  const response = await app.fetch(
+    new Request("http://localhost/api/admin/setup-db", {
+      method: "POST",
+      // headers: {
+      //   Authorization: `Basic ${btoa(`admin:${TOKEN_ADMIN}`)}`,
+      // },
+    }),
+  );
+  console.log(response.ok);
+  console.log(await response.text());
+
+  if (options.resetDb) {
+    console.log(`resetting  db...`);
+    await app.fetch(
+      new Request("http://localhost/api/admin/reset-db", {
+        method: "POST",
+        // headers: {
+        //   Authorization: `Basic ${btoa(`admin:${TOKEN_ADMIN}`)}`,
+        // },
+      }),
+    );
   }
 
   serve({
