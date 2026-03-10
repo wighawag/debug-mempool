@@ -84,7 +84,7 @@ importers:
       remote-sql-d1:
         specifier: ^0.0.6
         version: 0.0.6(@cloudflare/workers-types@4.20250121.0)
-      template-agnostic-server-app:
+      purgatory-app:
         specifier: workspace:*
         version: link:../../packages/server
       workers-logger:
@@ -136,7 +136,7 @@ importers:
       remote-sql-libsql:
         specifier: ^0.0.6
         version: 0.0.6(@libsql/core@0.15.15)
-      template-agnostic-server-app:
+      purgatory-app:
         specifier: workspace:*
         version: link:../../packages/server
     devDependencies:

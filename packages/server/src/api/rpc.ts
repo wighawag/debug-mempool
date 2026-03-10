@@ -6,6 +6,9 @@ import {Env} from '../env.js';
 import {JsonRpcRequest} from '../rpc/types.js';
 import {forwardRpcRequest, createJsonRpcError} from '../rpc/proxy.js';
 import {MempoolManager} from '../mempool/state.js';
+import {logs} from 'named-logs';
+
+const logger = logs('rpc');
 
 // Methods that should be intercepted
 const INTERCEPTED_METHODS = [
@@ -14,7 +17,9 @@ const INTERCEPTED_METHODS = [
 	'eth_getTransactionCount',
 ];
 
-export function getRpcAPI<CustomEnv extends Env>(options: ServerOptions<CustomEnv>) {
+export function getRpcAPI<CustomEnv extends Env>(
+	options: ServerOptions<CustomEnv>,
+) {
 	const app = new Hono<{Bindings: CustomEnv}>()
 		.use(setup({serverOptions: options}))
 		.post('/', async (c) => {
@@ -22,7 +27,10 @@ export function getRpcAPI<CustomEnv extends Env>(options: ServerOptions<CustomEn
 			const targetUrl = config.env.RPC_URL;
 
 			if (!targetUrl) {
-				return c.json(createJsonRpcError(null, -32603, 'RPC_URL not configured'), 500);
+				return c.json(
+					createJsonRpcError(null, -32603, 'RPC_URL not configured'),
+					500,
+				);
 			}
 
 			let request: JsonRpcRequest;
@@ -34,7 +42,10 @@ export function getRpcAPI<CustomEnv extends Env>(options: ServerOptions<CustomEn
 
 			// Validate JSON-RPC structure
 			if (request.jsonrpc !== '2.0' || !request.method) {
-				return c.json(createJsonRpcError(request?.id ?? null, -32600, 'Invalid Request'), 400);
+				return c.json(
+					createJsonRpcError(request?.id ?? null, -32600, 'Invalid Request'),
+					400,
+				);
 			}
 
 			// Create mempool manager
@@ -43,9 +54,17 @@ export function getRpcAPI<CustomEnv extends Env>(options: ServerOptions<CustomEn
 			// Handle intercepted methods
 			switch (request.method) {
 				case 'eth_sendRawTransaction': {
+					logger.debug(`eth_sendRawTransaction...`);
 					const rawTx = request.params?.[0] as string;
 					if (!rawTx) {
-						return c.json(createJsonRpcError(request.id, -32602, 'Missing transaction data'), 400);
+						return c.json(
+							createJsonRpcError(
+								request.id,
+								-32602,
+								'Missing transaction data',
+							),
+							400,
+						);
 					}
 					const response = await mempool.processTransaction(rawTx, request.id);
 					return c.json(response);
@@ -54,7 +73,14 @@ export function getRpcAPI<CustomEnv extends Env>(options: ServerOptions<CustomEn
 				case 'eth_getTransactionByHash': {
 					const hash = request.params?.[0] as string;
 					if (!hash) {
-						return c.json(createJsonRpcError(request.id, -32602, 'Missing transaction hash'), 400);
+						return c.json(
+							createJsonRpcError(
+								request.id,
+								-32602,
+								'Missing transaction hash',
+							),
+							400,
+						);
 					}
 
 					// Check local mempool first
@@ -85,7 +111,12 @@ export function getRpcAPI<CustomEnv extends Env>(options: ServerOptions<CustomEn
 									maxPriorityFeePerGas: `0x${localTx.maxPriorityFeePerGas.toString(16)}`,
 								}),
 								// Transaction type
-								type: localTx.txType === 'legacy' ? '0x0' : localTx.txType === 'eip2930' ? '0x1' : '0x2',
+								type:
+									localTx.txType === 'legacy'
+										? '0x0'
+										: localTx.txType === 'eip2930'
+											? '0x1'
+											: '0x2',
 								// Chain ID if present
 								...(localTx.chainId && {
 									chainId: `0x${localTx.chainId.toString(16)}`,
@@ -98,45 +129,48 @@ export function getRpcAPI<CustomEnv extends Env>(options: ServerOptions<CustomEn
 					break;
 				}
 
-					case 'eth_getTransactionCount': {
-						// Account for pending transactions in local mempool
-						const [address, blockTag] = request.params as [string, string];
-	
-						if (blockTag === 'pending') {
-							// Get pending count from node (includes forwarded txs in node's mempool)
-							const response = await forwardRpcRequest(request, {targetUrl});
-	
-							if (!response.error && response.result) {
-								const nodePendingCount = parseInt(response.result as string, 16);
-								// Get local pending transactions (not yet sent to node)
-								const localPending = await config.storage.getTransactionsBySender(
-									address.toLowerCase() as Address
-								);
-	
-								if (localPending.length === 0) {
-									// No local pending, return node's response directly
-									return c.json(response);
-								}
-	
-								// Find max nonce among local pending transactions
-								const maxLocalNonce = localPending.reduce(
-									(max, tx) => Math.max(max, tx.nonce),
-									-1
-								);
-	
-								// Return the higher of: node's pending count or local max nonce + 1
-								const effectiveCount = Math.max(nodePendingCount, maxLocalNonce + 1);
-	
-								return c.json({
-									jsonrpc: '2.0',
-									id: request.id,
-									result: `0x${effectiveCount.toString(16)}`,
-								});
+				case 'eth_getTransactionCount': {
+					// Account for pending transactions in local mempool
+					const [address, blockTag] = request.params as [string, string];
+
+					if (blockTag === 'pending') {
+						// Get pending count from node (includes forwarded txs in node's mempool)
+						const response = await forwardRpcRequest(request, {targetUrl});
+
+						if (!response.error && response.result) {
+							const nodePendingCount = parseInt(response.result as string, 16);
+							// Get local pending transactions (not yet sent to node)
+							const localPending = await config.storage.getTransactionsBySender(
+								address.toLowerCase() as Address,
+							);
+
+							if (localPending.length === 0) {
+								// No local pending, return node's response directly
+								return c.json(response);
 							}
+
+							// Find max nonce among local pending transactions
+							const maxLocalNonce = localPending.reduce(
+								(max, tx) => Math.max(max, tx.nonce),
+								-1,
+							);
+
+							// Return the higher of: node's pending count or local max nonce + 1
+							const effectiveCount = Math.max(
+								nodePendingCount,
+								maxLocalNonce + 1,
+							);
+
+							return c.json({
+								jsonrpc: '2.0',
+								id: request.id,
+								result: `0x${effectiveCount.toString(16)}`,
+							});
 						}
-						// Fall through to forward
-						break;
 					}
+					// Fall through to forward
+					break;
+				}
 			}
 
 			// Forward non-intercepted methods to the target node

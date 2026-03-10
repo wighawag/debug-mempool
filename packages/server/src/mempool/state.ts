@@ -1,10 +1,21 @@
 import type {Hex, Hash, Address} from 'viem';
 import {MempoolStorage} from '../storage/mempool.js';
-import {decodeRawTransaction, validateTransaction, DecodedTransaction} from './decoder.js';
+import {
+	decodeRawTransaction,
+	validateTransaction,
+	DecodedTransaction,
+} from './decoder.js';
 import {applyFilters, FilterResult} from './filters.js';
 import type {PendingTransaction} from './types.js';
-import {forwardRpcRequest, createJsonRpcResult, createJsonRpcError} from '../rpc/proxy.js';
+import {
+	forwardRpcRequest,
+	createJsonRpcResult,
+	createJsonRpcError,
+} from '../rpc/proxy.js';
 import type {JsonRpcResponse} from '../rpc/types.js';
+import {logs} from 'named-logs';
+
+const logger = logs('state');
 
 export interface MempoolState {
 	minGasPrice: bigint;
@@ -14,7 +25,7 @@ export interface MempoolState {
 export class MempoolManager {
 	constructor(
 		private storage: MempoolStorage,
-		private targetUrl: string
+		private targetUrl: string,
 	) {}
 
 	// Get current mempool state
@@ -26,16 +37,20 @@ export class MempoolManager {
 	}
 
 	// Process incoming eth_sendRawTransaction
-	async processTransaction(rawTx: string, requestId: number | string | null): Promise<JsonRpcResponse> {
+	async processTransaction(
+		rawTx: string,
+		requestId: number | string | null,
+	): Promise<JsonRpcResponse> {
 		// Decode the transaction
 		let decoded: DecodedTransaction;
 		try {
 			decoded = await decodeRawTransaction(rawTx);
+			logger.debug(decoded);
 		} catch (error) {
 			return createJsonRpcError(
 				requestId,
 				-32000,
-				`Failed to decode transaction: ${error instanceof Error ? error.message : 'Unknown error'}`
+				`Failed to decode transaction: ${error instanceof Error ? error.message : 'Unknown error'}`,
 			);
 		}
 
@@ -88,7 +103,7 @@ export class MempoolManager {
 	async forwardTransaction(
 		hash: Hash,
 		rawTx?: string,
-		requestId?: number | string | null
+		requestId?: number | string | null,
 	): Promise<JsonRpcResponse> {
 		// Get transaction if not provided
 		if (!rawTx) {
@@ -97,7 +112,7 @@ export class MempoolManager {
 				return createJsonRpcError(
 					requestId ?? null,
 					-32000,
-					`Transaction ${hash} not found in mempool`
+					`Transaction ${hash} not found in mempool`,
 				);
 			}
 			rawTx = tx.rawTx;
@@ -111,7 +126,7 @@ export class MempoolManager {
 				method: 'eth_sendRawTransaction',
 				params: [rawTx],
 			},
-			{targetUrl: this.targetUrl}
+			{targetUrl: this.targetUrl},
 		);
 
 		// Update status if successful
@@ -148,7 +163,11 @@ export class MempoolManager {
 			return false;
 		}
 
-		await this.storage.updateStatus(hash, 'dropped', reason ?? 'Manually dropped');
+		await this.storage.updateStatus(
+			hash,
+			'dropped',
+			reason ?? 'Manually dropped',
+		);
 		return true;
 	}
 

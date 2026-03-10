@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import "named-logs-context";
-import { createServer, type Env } from "template-agnostic-server-app";
+import { createServer, type Env } from "purgatory-app";
 import { serve } from "@hono/node-server";
 import { RemoteLibSQL } from "remote-sql-libsql";
 import { createClient } from "@libsql/client";
@@ -26,10 +26,10 @@ async function main() {
   const program = new Command();
 
   program
-    .name("template-agnostic-server-nodejs")
+    .name("purgatory-nodejs")
     .version(pkg.version)
-    .usage(`template-agnostic-server-nodejs [--port 2000] [--rpc-url <url>]`)
-    .description("run template-agnostic-server-nodejs as a node process")
+    .usage(`purgatory-nodejs [--port 2000] [--rpc-url <url>]`)
+    .description("run purgatory-nodejs as a node process")
     .option("-p, --port <port>", "port to listen on", "2000")
     .option("-r, --rpc-url <url>", "RPC URL for the Ethereum node to proxy to");
 

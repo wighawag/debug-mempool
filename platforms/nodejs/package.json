@@ -1,5 +1,5 @@
 {
-  "name": "template-agnostic-server-nodejs",
+  "name": "purgatory-nodejs",
   "version": "0.0.0",
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "@libsql/client": "^0.15.0",
     "commander": "^13.1.0",
     "ldenv": "^0.3.12",
-    "template-agnostic-server-app": "workspace:*",
+    "purgatory-app": "workspace:*",
     "named-logs-context": "^0.1.1",
     "remote-sql-libsql": "^0.0.6"
   },

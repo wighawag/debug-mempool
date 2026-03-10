@@ -12,9 +12,13 @@ export async function forwardRpcRequest(
 	options: ProxyOptions,
 ): Promise<JsonRpcResponse> {
 	const body = JSON.stringify(request);
-	logger.info(`Forwarding RPC request to ${options.targetUrl}:`, request.method, request.params);
-	logger.debug(`Request body: ${body}`);
-	
+	// logger.info(
+	// 	`Forwarding RPC request to ${options.targetUrl}:`,
+	// 	request.method,
+	// 	request.params,
+	// );
+	// logger.debug(`Request body: ${body}`);
+
 	const response = await fetch(options.targetUrl, {
 		method: 'POST',
 		headers: {
@@ -25,7 +29,10 @@ export async function forwardRpcRequest(
 
 	if (!response.ok) {
 		const errorBody = await response.text();
-		logger.error(`Upstream error: ${response.status} ${response.statusText}`, errorBody);
+		logger.error(
+			`Upstream error: ${response.status} ${response.statusText}`,
+			errorBody,
+		);
 		return {
 			jsonrpc: '2.0',
 			id: request.id,
@@ -36,7 +43,7 @@ export async function forwardRpcRequest(
 		};
 	}
 
-	const result = await response.json() as JsonRpcResponse;
+	const result = (await response.json()) as JsonRpcResponse;
 	if (result.error) {
 		logger.warn(`RPC error response for ${request.method}:`, result.error);
 	}

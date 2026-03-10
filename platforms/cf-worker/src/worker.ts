@@ -6,8 +6,8 @@ import {track, enable as enableWorkersLogger} from 'workers-logger';
 import {ExecutionContext} from '@cloudflare/workers-types/experimental';
 import {logflareReport} from './utils/logflare.js';
 import {consoleReporter} from './utils/basicReporters.js';
-import {createServer} from 'template-agnostic-server-app';
-import pkg from 'template-agnostic-server-app/package.json';
+import {createServer} from 'purgatory-app';
+import pkg from 'purgatory-app/package.json';
 
 enableWorkersLogger('*');
 const logger = logs('worker');

@@ -1,5 +1,5 @@
 {
-  "name": "template-agnostic-server-monorepo",
+  "name": "purgatory-monorepo",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -15,12 +15,12 @@
     "format": "pnpm -r format",
     "format:check": "pnpm -r format:check",
     "---------------------- DEV ----------------------": "",
-    "cf-worker:dev": "pnpm --filter template-agnostic-server-cf-worker dev",
-    "nodejs:dev": "pnpm --filter template-agnostic-server-nodejs dev",
-    "server:dev": "pnpm --filter template-agnostic-server-app dev",
+    "cf-worker:dev": "pnpm --filter purgatory-cf-worker dev",
+    "nodejs:dev": "pnpm --filter purgatory-nodejs dev",
+    "server:dev": "pnpm --filter purgatory-app dev",
     "---------------------- DEPLOY ----------------------": "",
     "build": "ldenv pnpm run -r build",
-    "deploy:cf": "pnpm run --filter template-agnostic-server-server-cf-worker deploy",
+    "deploy:cf": "pnpm run --filter purgatory-server-cf-worker deploy",
     "---------------------- RUN FULL LOCAL SETUP ----------------------": "",
     "stop": "cross-var zellij kill-session $npm_package_name",
     "start": "cross-var zellij-launcher a $npm_package_name || cross-var ldenv -d localhost zellij -n zellij.kdl -s $npm_package_name"

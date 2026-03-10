@@ -1,4 +1,4 @@
-import {Env} from 'template-agnostic-server-app';
+import {Env} from 'purgatory-app';
 
 export type CloudflareEnv = Env & {
 	DB: D1Database;
