@@ -149,22 +149,27 @@ export function getRpcAPI<CustomEnv extends Env>(
 								return c.json(response);
 							}
 
-							// Find max nonce among local pending transactions
-							const maxLocalNonce = localPending.reduce(
-								(max, tx) => Math.max(max, tx.nonce),
-								-1,
-							);
+							// Sort by nonce to find gaps
+							localPending.sort((a, b) => a.nonce - b.nonce);
 
-							// Return the higher of: node's pending count or local max nonce + 1
-							const effectiveCount = Math.max(
-								nodePendingCount,
-								maxLocalNonce + 1,
-							);
+							// Start from onchain count and find first missing nonce
+							let nextNonce = nodePendingCount;
+
+							for (const tx of localPending) {
+								if (tx.nonce === nextNonce) {
+									// This nonce exists, check next
+									nextNonce++;
+								} else if (tx.nonce > nextNonce) {
+									// Found a gap - return the missing nonce
+									break;
+								}
+								// If tx.nonce < nextNonce, it's already accounted for in onchain count
+							}
 
 							return c.json({
 								jsonrpc: '2.0',
 								id: request.id,
-								result: `0x${effectiveCount.toString(16)}`,
+								result: `0x${nextNonce.toString(16)}`,
 							});
 						}
 					}
