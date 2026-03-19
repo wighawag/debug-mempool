@@ -112,17 +112,17 @@ export class MempoolManager {
 		requestId?: number | string | null,
 	): Promise<JsonRpcResponse> {
 		// Get transaction if not provided
-			if (!rawTx) {
-				const tx = await this.storage.getTransaction(hash, true); // include hidden
-				if (!tx) {
-					return createJsonRpcError(
-						requestId ?? null,
-						-32000,
-						`Transaction ${hash} not found in mempool`,
-					);
-				}
-				rawTx = tx.rawTx;
+		if (!rawTx) {
+			const tx = await this.storage.getTransaction(hash, true); // include hidden
+			if (!tx) {
+				return createJsonRpcError(
+					requestId ?? null,
+					-32000,
+					`Transaction ${hash} not found in mempool`,
+				);
 			}
+			rawTx = tx.rawTx;
+		}
 
 		// Forward to node
 		const response = await forwardRpcRequest(
@@ -178,7 +178,9 @@ export class MempoolManager {
 	}
 
 	// Hide a pending transaction (soft delete - can be restored later)
-	async hideTransaction(hash: Hash): Promise<{success: boolean; error?: string}> {
+	async hideTransaction(
+		hash: Hash,
+	): Promise<{success: boolean; error?: string}> {
 		const tx = await this.storage.getTransaction(hash, true); // include hidden
 		if (!tx) {
 			return {success: false, error: `Transaction ${hash} not found`};
@@ -193,7 +195,9 @@ export class MempoolManager {
 	}
 
 	// Restore a hidden transaction
-	async restoreTransaction(hash: Hash): Promise<{success: boolean; error?: string}> {
+	async restoreTransaction(
+		hash: Hash,
+	): Promise<{success: boolean; error?: string}> {
 		const tx = await this.storage.getTransaction(hash, true); // include hidden
 		if (!tx) {
 			return {success: false, error: `Transaction ${hash} not found`};

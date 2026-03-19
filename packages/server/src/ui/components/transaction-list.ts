@@ -42,7 +42,11 @@ export function transactionList(
 			<tbody>
 				${transactions.map(
 					(tx) => html`
-						<tr class="${isHidden(tx) ? 'tx-hidden' : ''} ${hasConflict(tx) ? 'nonce-conflict' : ''}">
+						<tr
+							class="${isHidden(tx) ? 'tx-hidden' : ''} ${hasConflict(tx)
+								? 'nonce-conflict'
+								: ''}"
+						>
 							<td class="hash truncate" title="${tx.hash}">
 								${truncateHash(tx.hash)}
 								${isHidden(tx)
@@ -81,7 +85,9 @@ export function transactionList(
 								<button
 									class="btn ${isHidden(tx) ? 'btn-info' : 'btn-warning'}"
 									style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
-									hx-post="/ui/actions/${isHidden(tx) ? 'restore' : 'hide'}/${tx.hash}"
+									hx-post="/ui/actions/${isHidden(tx)
+										? 'restore'
+										: 'hide'}/${tx.hash}"
 									hx-target="#transaction-list"
 									hx-swap="innerHTML"
 									hx-trigger="click"

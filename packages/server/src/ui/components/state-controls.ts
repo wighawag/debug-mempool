@@ -13,14 +13,14 @@ export function stateControls(state: StateControlsProps) {
 
 	return html`
 		<div class="controls">
-		<div>
+			<div>
 				<strong>Auto-Forward:</strong>
 				${state.autoForward
 					? html`<span class="status-badge status-forwarded">Enabled</span>`
 					: html`<span class="status-badge status-pending">Disabled</span>`}
 			</div>
 
-		${state.autoForward
+			${state.autoForward
 				? html`
 						<button class="btn btn-warning" onclick="toggleAutoForward(false)">
 							⏸️ Disable Auto-Forward

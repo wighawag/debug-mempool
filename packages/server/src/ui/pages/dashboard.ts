@@ -18,7 +18,13 @@ export interface DashboardProps {
 	conflicts?: Map<string, string[]>;
 }
 
-export function dashboard({state, stats, pending, hiddenCount, conflicts}: DashboardProps) {
+export function dashboard({
+	state,
+	stats,
+	pending,
+	hiddenCount,
+	conflicts,
+}: DashboardProps) {
 	const content = html`
 		${!state.autoForward
 			? html`<div class="paused-banner">

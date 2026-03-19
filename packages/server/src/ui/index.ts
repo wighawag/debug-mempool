@@ -58,11 +58,22 @@ export function getUIRoutes<CustomEnv extends Env>(
 				};
 
 				const stats = await storage.getStats();
-				const pending = await storage.getPendingTransactions({limit: 50, includeHidden: true});
+				const pending = await storage.getPendingTransactions({
+					limit: 50,
+					includeHidden: true,
+				});
 				const hidden = await storage.getHiddenTransactions();
 				const conflicts = await storage.getNonceConflicts();
 
-				return c.html(dashboard({state, stats, pending, hiddenCount: hidden.length, conflicts}));
+				return c.html(
+					dashboard({
+						state,
+						stats,
+						pending,
+						hiddenCount: hidden.length,
+						conflicts,
+					}),
+				);
 			} catch (error) {
 				console.error('Dashboard error:', error);
 				return c.html(
