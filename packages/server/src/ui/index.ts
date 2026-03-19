@@ -7,6 +7,7 @@ import {dashboard} from './pages/dashboard.js';
 import {transactionList} from './components/transaction-list.js';
 import {stateControls} from './components/state-controls.js';
 import {statsCard} from './components/stats-card.js';
+import {hiddenTransactionsList} from './components/hidden-transactions.js';
 import {layout} from './layout.js';
 import htmxScript from './static/htmx.min.js.js';
 
@@ -59,9 +60,10 @@ export function getUIRoutes<CustomEnv extends Env>(
 
 				const stats = await storage.getStats();
 				const pending = await storage.getPendingTransactions({limit: 50});
+				const hidden = await storage.getHiddenTransactions();
 				const conflicts = await storage.getNonceConflicts();
 
-				return c.html(dashboard({state, stats, pending, conflicts}));
+				return c.html(dashboard({state, stats, pending, hidden, conflicts}));
 			} catch (error) {
 				console.error('Dashboard error:', error);
 				return c.html(
@@ -116,11 +118,27 @@ export function getUIRoutes<CustomEnv extends Env>(
 			try {
 				const config = c.get('config');
 				const stats = await config.storage.getStats();
-				return c.html(statsCard(stats));
+				const hidden = await config.storage.getHiddenTransactions();
+				return c.html(statsCard({stats, hiddenCount: hidden.length}));
 			} catch (error) {
 				console.error('Stats error:', error);
 				return c.html(
 					html`<div class="empty-state"><p>Failed to load stats</p></div>`,
+					500,
+				);
+			}
+		})
+
+		// HTMX partial: Hidden transactions
+		.get('/partials/hidden', async (c) => {
+			try {
+				const config = c.get('config');
+				const hidden = await config.storage.getHiddenTransactions();
+				return c.html(hiddenTransactionsList(hidden));
+			} catch (error) {
+				console.error('Hidden transactions error:', error);
+				return c.html(
+					html`<div class="empty-state"><p>Failed to load hidden transactions</p></div>`,
 					500,
 				);
 			}

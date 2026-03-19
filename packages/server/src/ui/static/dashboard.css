@@ -406,6 +406,21 @@ tr.nonce-conflict:hover {
 	filter: drop-shadow(0 0 4px rgba(255, 160, 40, 0.5));
 }
 
+/* Hidden transaction styling */
+tr.hidden-tx {
+	background: linear-gradient(90deg, rgba(160, 80, 255, 0.08) 0%, rgba(160, 80, 255, 0.04) 50%, rgba(160, 80, 255, 0.08) 100%);
+	opacity: 0.7;
+}
+
+tr.hidden-tx:hover {
+	background: linear-gradient(90deg, rgba(160, 80, 255, 0.15) 0%, rgba(160, 80, 255, 0.08) 50%, rgba(160, 80, 255, 0.15) 100%);
+	opacity: 1;
+}
+
+tr.hidden-tx td {
+	color: #b090d0;
+}
+
 /* Scanlines overlay effect */
 .scanlines {
 	position: fixed;

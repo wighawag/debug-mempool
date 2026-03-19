@@ -2,7 +2,12 @@ import {html} from 'hono/html';
 import {MempoolStats} from '../../mempool/types.js';
 import {formatAge} from '../utils.js';
 
-export function statsCard(stats: MempoolStats) {
+export interface StatsCardProps {
+	stats: MempoolStats;
+	hiddenCount?: number;
+}
+
+export function statsCard({stats, hiddenCount}: StatsCardProps) {
 	const now = Math.floor(Date.now() / 1000);
 	const oldestAge = stats.oldestPending ? now - stats.oldestPending : undefined;
 
@@ -11,6 +16,10 @@ export function statsCard(stats: MempoolStats) {
 			<div class="stat">
 				<div class="stat-value">${stats.totalPending}</div>
 				<div class="stat-label">Pending</div>
+			</div>
+			<div class="stat">
+				<div class="stat-value">${hiddenCount ?? 0}</div>
+				<div class="stat-label">Hidden</div>
 			</div>
 			<div class="stat">
 				<div class="stat-value">${stats.totalForwarded}</div>

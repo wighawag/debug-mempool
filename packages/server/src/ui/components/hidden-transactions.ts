@@ -2,26 +2,17 @@ import {html} from 'hono/html';
 import {PendingTransaction} from '../../mempool/types.js';
 import {formatGasPrice, formatEthValue, formatTimeAgo} from '../utils.js';
 
-export function transactionList(
-	transactions: PendingTransaction[],
-	conflicts?: Map<string, string[]>,
-) {
+export function hiddenTransactionsList(transactions: PendingTransaction[]) {
 	if (transactions.length === 0) {
 		return html`
 			<div class="empty-state">
-				<p>No pending transactions</p>
+				<p>No hidden transactions</p>
 			</div>
 		`;
 	}
 
 	const truncateHash = (hash: string) =>
 		`${hash.slice(0, 10)}...${hash.slice(-8)}`;
-
-	// Build conflict lookup
-	const hasConflict = (tx: PendingTransaction) => {
-		const key = `${tx.from.toLowerCase()}:${tx.nonce}`;
-		return conflicts?.has(key) ?? false;
-	};
 
 	return html`
 		<table>
@@ -33,14 +24,14 @@ export function transactionList(
 					<th>Value</th>
 					<th>Gas Price</th>
 					<th>Nonce</th>
-					<th>Age</th>
+					<th>Hidden At</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
 				${transactions.map(
 					(tx) => html`
-						<tr class="${hasConflict(tx) ? 'nonce-conflict' : ''}">
+						<tr class="hidden-tx">
 							<td class="hash truncate" title="${tx.hash}">
 								${truncateHash(tx.hash)}
 							</td>
@@ -52,47 +43,19 @@ export function transactionList(
 							</td>
 							<td>${formatEthValue(tx.value)}</td>
 							<td>${formatGasPrice(tx.maxFeePerGas ?? tx.gasPrice ?? 0n)}</td>
-							<td>
-								${tx.nonce}
-								${hasConflict(tx)
-									? html`<span
-											class="conflict-badge"
-											title="Multiple TXs with same nonce"
-											>⚠️</span
-										>`
-									: ''}
-							</td>
-							<td>${formatTimeAgo(tx.createdAt)}</td>
+							<td>${tx.nonce}</td>
+							<td>${tx.deletedAt ? formatTimeAgo(tx.deletedAt) : '-'}</td>
 							<td class="actions">
 								<button
 									class="btn btn-success"
 									style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
-									hx-post="/api/mempool/include/${tx.hash}"
-									hx-swap="none"
-									title="Force Include"
-								>
-									✓
-								</button>
-								<button
-									class="btn btn-warning"
-									style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
-									hx-post="/api/admin/tx/hide"
+									hx-post="/api/admin/tx/restore"
 									hx-vals='{"hash":"${tx.hash}"}'
-									hx-target="#transaction-list"
+									hx-target="#hidden-transactions-list"
 									hx-swap="outerHTML"
-									hx-confirm="Hide this transaction?"
-									title="Hide Transaction"
+									title="Restore Transaction"
 								>
-									👁️
-								</button>
-								<button
-									class="btn btn-danger"
-									style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
-									hx-post="/api/mempool/drop/${tx.hash}"
-									hx-swap="none"
-									title="Drop"
-								>
-									✕
+									↻ Restore
 								</button>
 							</td>
 						</tr>

@@ -3,6 +3,7 @@ import {layout} from '../layout.js';
 import {stateControls} from '../components/state-controls.js';
 import {statsCard} from '../components/stats-card.js';
 import {transactionList} from '../components/transaction-list.js';
+import {hiddenTransactionsList} from '../components/hidden-transactions.js';
 import {PendingTransaction, MempoolStats} from '../../mempool/types.js';
 
 export interface DashboardProps {
@@ -14,10 +15,11 @@ export interface DashboardProps {
 	};
 	stats: MempoolStats;
 	pending: PendingTransaction[];
+	hidden?: PendingTransaction[];
 	conflicts?: Map<string, string[]>;
 }
 
-export function dashboard({state, stats, pending, conflicts}: DashboardProps) {
+export function dashboard({state, stats, pending, hidden, conflicts}: DashboardProps) {
 	const content = html`
 		${!state.autoForward
 			? html`<div class="paused-banner">
@@ -40,7 +42,7 @@ export function dashboard({state, stats, pending, conflicts}: DashboardProps) {
 			<div class="card">
 				<h2>Statistics</h2>
 				<div id="stats-card" hx-get="/ui/partials/stats" hx-trigger="every 5s">
-					${raw(statsCard(stats))}
+					${raw(statsCard({stats, hiddenCount: hidden?.length ?? 0}))}
 				</div>
 			</div>
 
@@ -56,6 +58,21 @@ export function dashboard({state, stats, pending, conflicts}: DashboardProps) {
 					hx-indicator=".htmx-indicator"
 				>
 					${raw(transactionList(pending, conflicts))}
+				</div>
+			</div>
+
+			<div class="card">
+				<h2>
+					Hidden Transactions
+					<span class="htmx-indicator">⏳</span>
+				</h2>
+				<div
+					id="hidden-transactions-list"
+					hx-get="/ui/partials/hidden"
+					hx-trigger="every 5s"
+					hx-indicator=".htmx-indicator"
+				>
+					${raw(hiddenTransactionsList(hidden ?? []))}
 				</div>
 			</div>
 		</div>

@@ -449,6 +449,91 @@ export function getMempoolAPI<CustomEnv extends Env>(
 				success: true,
 				data: {cleared: pendingCount},
 			});
+		})
+
+		// POST /api/mempool/hide/:hash - Hide a transaction (soft delete)
+		.post('/hide/:hash', async (c) => {
+			const hash = c.req.param('hash') as Hash;
+			const config = c.get('config');
+			const targetUrl = config.env.RPC_URL;
+
+			if (!targetUrl) {
+				return c.json<ApiResponse>(
+					{
+						success: false,
+						error: 'RPC_URL not configured',
+					},
+					500,
+				);
+			}
+
+			const mempool = new MempoolManager(config.storage, targetUrl);
+			const result = await mempool.hideTransaction(hash);
+
+			if (!result.success) {
+				return c.json<ApiResponse>(
+					{
+						success: false,
+						error: result.error,
+					},
+					400,
+				);
+			}
+
+			return c.json<ApiResponse>({
+				success: true,
+				data: {hash, hidden: true},
+			});
+		})
+
+		// POST /api/mempool/restore/:hash - Restore a hidden transaction
+		.post('/restore/:hash', async (c) => {
+			const hash = c.req.param('hash') as Hash;
+			const config = c.get('config');
+			const targetUrl = config.env.RPC_URL;
+
+			if (!targetUrl) {
+				return c.json<ApiResponse>(
+					{
+						success: false,
+						error: 'RPC_URL not configured',
+					},
+					500,
+				);
+			}
+
+			const mempool = new MempoolManager(config.storage, targetUrl);
+			const result = await mempool.restoreTransaction(hash);
+
+			if (!result.success) {
+				return c.json<ApiResponse>(
+					{
+						success: false,
+						error: result.error,
+					},
+					400,
+				);
+			}
+
+			return c.json<ApiResponse>({
+				success: true,
+				data: {hash, restored: true},
+			});
+		})
+
+		// GET /api/mempool/hidden - List hidden transactions
+		.get('/hidden', async (c) => {
+			const config = c.get('config');
+			const address = c.req.query('address');
+
+			const hidden = await config.storage.getHiddenTransactions(
+				address as `0x${string}` | undefined,
+			);
+
+			return c.json<ApiResponse<TransactionInfo[]>>({
+				success: true,
+				data: hidden.map(toTransactionInfo),
+			});
 		});
 
 	return app;
