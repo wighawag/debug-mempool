@@ -112,17 +112,17 @@ export class MempoolManager {
 		requestId?: number | string | null,
 	): Promise<JsonRpcResponse> {
 		// Get transaction if not provided
-		if (!rawTx) {
-			const tx = await this.storage.getTransaction(hash);
-			if (!tx) {
-				return createJsonRpcError(
-					requestId ?? null,
-					-32000,
-					`Transaction ${hash} not found in mempool`,
-				);
+			if (!rawTx) {
+				const tx = await this.storage.getTransaction(hash, true); // include hidden
+				if (!tx) {
+					return createJsonRpcError(
+						requestId ?? null,
+						-32000,
+						`Transaction ${hash} not found in mempool`,
+					);
+				}
+				rawTx = tx.rawTx;
 			}
-			rawTx = tx.rawTx;
-		}
 
 		// Forward to node
 		const response = await forwardRpcRequest(
@@ -143,9 +143,9 @@ export class MempoolManager {
 		return response;
 	}
 
-	// Force-include a pending transaction
+	// Force-include a pending transaction (can include hidden transactions)
 	async forceInclude(hash: Hash): Promise<{success: boolean; error?: string}> {
-		const tx = await this.storage.getTransaction(hash);
+		const tx = await this.storage.getTransaction(hash, true); // include hidden
 		if (!tx) {
 			return {success: false, error: `Transaction ${hash} not found`};
 		}

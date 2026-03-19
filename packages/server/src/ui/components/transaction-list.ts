@@ -83,7 +83,7 @@ export function transactionList(
 									style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
 									hx-post="/ui/actions/${isHidden(tx) ? 'restore' : 'hide'}/${tx.hash}"
 									hx-target="#transaction-list"
-									hx-swap="outerHTML"
+									hx-swap="innerHTML"
 									hx-trigger="click"
 									title="${isHidden(tx) ? 'Restore' : 'Hide'} Transaction"
 								>
@@ -94,7 +94,7 @@ export function transactionList(
 									style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
 									hx-post="/ui/actions/drop/${tx.hash}"
 									hx-target="#transaction-list"
-									hx-swap="outerHTML"
+									hx-swap="innerHTML"
 									title="Drop"
 								>
 									✕

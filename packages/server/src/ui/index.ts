@@ -58,7 +58,7 @@ export function getUIRoutes<CustomEnv extends Env>(
 				};
 
 				const stats = await storage.getStats();
-				const pending = await storage.getPendingTransactions({limit: 50});
+				const pending = await storage.getPendingTransactions({limit: 50, includeHidden: true});
 				const hidden = await storage.getHiddenTransactions();
 				const conflicts = await storage.getNonceConflicts();
 
@@ -210,8 +210,8 @@ export function getUIRoutes<CustomEnv extends Env>(
 				const hash = c.req.param('hash') as `0x${string}`;
 				const config = c.get('config');
 
-				// Check if transaction exists and is pending
-				const tx = await config.storage.getTransaction(hash);
+				// Check if transaction exists and is pending (include hidden transactions)
+				const tx = await config.storage.getTransaction(hash, true);
 				if (!tx) {
 					throw new Error('Transaction not found');
 				}
@@ -222,9 +222,10 @@ export function getUIRoutes<CustomEnv extends Env>(
 
 				await config.storage.updateStatus(hash, 'dropped', 'Manually dropped');
 
-				// Return updated transaction list
+				// Return updated transaction list (includes hidden)
 				const pending = await config.storage.getPendingTransactions({
 					limit: 50,
+					includeHidden: true,
 				});
 				const conflicts = await config.storage.getNonceConflicts();
 				return c.html(transactionList(pending, conflicts));
