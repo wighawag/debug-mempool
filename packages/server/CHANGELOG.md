@@ -1,5 +1,11 @@
 # purgatory-core
 
+## 0.0.3
+
+### Patch Changes
+
+- fix nonce when gap
+
 ## 0.0.2
 
 ### Patch Changes
