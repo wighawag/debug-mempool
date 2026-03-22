@@ -1,6 +1,6 @@
 {
   "name": "purgatory-core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "purgatory server hono app",
   "license": "MIT",
   "publishConfig": {

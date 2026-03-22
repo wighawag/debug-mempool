@@ -1,5 +1,11 @@
 # purgatory-core
 
+## 0.0.5
+
+### Patch Changes
+
+- 8d6b3ce: memory leak prevention
+
 ## 0.0.4
 
 ### Patch Changes
