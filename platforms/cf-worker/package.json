@@ -8,21 +8,21 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "named-logs": "^0.3.2",
+    "named-logs": "^0.4.1",
     "named-logs-context": "^0.1.1",
-    "remote-sql-d1": "^0.0.6",
-    "workers-logger": "0.2.1",
-    "purgatory-core": "workspace:*"
+    "purgatory-core": "workspace:*",
+    "remote-sql-d1": "^0.0.7",
+    "workers-logger": "0.2.1"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.5.36",
-    "@cloudflare/workers-types": "^4.20241205.0",
-    "@types/node": "^22.10.2",
-    "ldenv": "^0.3.12",
+    "@cloudflare/vitest-pool-workers": "^0.13.4",
+    "@cloudflare/workers-types": "^4.20260317.1",
+    "@types/node": "^25.5.0",
+    "ldenv": "^0.3.16",
     "set-defaults": "^0.0.5",
-    "typescript": "^5.6.3",
-    "vitest": "^2.1.8",
-    "wrangler": "^3.95.0"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2",
+    "wrangler": "^4.77.0"
   },
   "scripts": {
     "prepare": "set-defaults .",

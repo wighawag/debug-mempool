@@ -1,6 +1,6 @@
 {
   "name": "purgatory-core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "purgatory server hono app",
   "license": "MIT",
   "publishConfig": {
@@ -19,24 +19,24 @@
     "src"
   ],
   "dependencies": {
-    "hono": "^4.6.13",
-    "named-logs": "^0.3.2",
-    "remote-sql": "^0.0.6",
-    "viem": "^2.47.0"
+    "hono": "^4.12.9",
+    "named-logs": "^0.4.1",
+    "remote-sql": "^0.0.7",
+    "viem": "^2.47.6"
   },
   "devDependencies": {
-    "@libsql/client": "^0.15.0",
-    "@types/node": "^25.2.0",
-    "as-soon": "^0.0.11",
+    "@libsql/client": "^0.17.2",
+    "@types/node": "^25.5.0",
+    "as-soon": "^0.1.5",
     "eip-1193": "^0.6.5",
-    "ldenv": "^0.3.12",
-    "prettier": "^3.4.2",
-    "prool": "^0.2.2",
+    "ldenv": "^0.3.16",
+    "prettier": "^3.8.1",
+    "prool": "^0.2.4",
     "remote-procedure-call": "^0.1.1",
-    "remote-sql-libsql": "^0.0.6",
+    "remote-sql-libsql": "^0.0.7",
     "tsx": "^4.21.0",
-    "typescript": "^5.6.3",
-    "vitest": "^4.0.18"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
   },
   "scripts": {
     "format:check": "prettier --check .",

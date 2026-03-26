@@ -1,5 +1,11 @@
 # purgatory-core
 
+## 0.0.6
+
+### Patch Changes
+
+- latest deps
+
 ## 0.0.5
 
 ### Patch Changes

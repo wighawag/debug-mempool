@@ -1,6 +1,6 @@
 {
   "name": "purgatory",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publishConfig": {
     "access": "public"
   },
@@ -15,19 +15,19 @@
   ],
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "@libsql/client": "^0.15.0",
-    "commander": "^13.1.0",
-    "ldenv": "^0.3.12",
-    "purgatory-core": "workspace:*",
+    "@libsql/client": "^0.17.2",
+    "commander": "^14.0.3",
+    "ldenv": "^0.3.16",
     "named-logs-context": "^0.1.1",
-    "remote-sql-libsql": "^0.0.6"
+    "purgatory-core": "workspace:*",
+    "remote-sql-libsql": "^0.0.7"
   },
   "devDependencies": {
-    "@types/node": "^22.13.10",
-    "as-soon": "^0.0.11",
+    "@types/node": "^25.5.0",
+    "as-soon": "^0.1.5",
     "set-defaults": "^0.0.5",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "^6.0.2"
   },
   "scripts": {
     "prepare": "set-defaults .env.default",

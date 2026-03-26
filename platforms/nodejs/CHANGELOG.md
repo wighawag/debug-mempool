@@ -1,5 +1,13 @@
 # purgatory
 
+## 0.0.7
+
+### Patch Changes
+
+- latest deps
+- Updated dependencies
+  - purgatory-core@0.0.6
+
 ## 0.0.6
 
 ### Patch Changes
